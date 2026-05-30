@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: stabilityos-backend
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:stabilityos}
+    username: ${DB_USER:stabilityos}
+    password: ${DB_PASSWORD:stabilityos_dev_password}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: 8080
