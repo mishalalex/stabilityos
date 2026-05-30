@@ -4,13 +4,13 @@ services:
     container_name: stabilityos-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: stabilityos
-      POSTGRES_USER: stabilityos
-      POSTGRES_PASSWORD: stabilityos_dev_password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "127.0.0.1:5433:5432"
+      - "127.0.0.1:${POSTGRES_HOST_PORT}:5432"
 
   backend:
     build: ./backend
@@ -19,14 +19,14 @@ services:
     depends_on:
       - postgres
     environment:
-      SPRING_PROFILES_ACTIVE: docker
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: stabilityos
-      DB_USER: stabilityos
-      DB_PASSWORD: stabilityos_dev_password
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:${BACKEND_PORT}:8080"
 
 volumes:
   postgres_data:
