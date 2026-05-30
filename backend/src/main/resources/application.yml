@@ -18,3 +18,6 @@ spring:
 
 server:
   port: 8080
+
+stabilityos:
+  api-key: ${STABILITYOS_API_KEY}
