@@ -18,7 +18,7 @@ This project is also a serious Spring Boot portfolio project.
 
 ## Current Status
 
-**Current phase:** Phase 2 — Finance Core
+**Current phase: Phase 3 — Health Core
 
 ### Completed
 
@@ -287,7 +287,7 @@ Create a portable foundation that can be moved to a new VPS easily.
 
 ### Phase 2 — Finance Core 🚧
 
-Build:
+Built:
 
 * Expense entity
 * Expense repository
@@ -314,7 +314,7 @@ Start tracking real daily spending.
 
 ### Phase 3 — Health Core
 
-Build:
+Built:
 
 * Sleep logging
 * Water logging
