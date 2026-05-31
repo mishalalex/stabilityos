@@ -29,7 +29,7 @@ Spring Boot API
 
 ## Current Status
 
-**Current phase:** Phase 5, early Assistant Brain
+**Current phase:** Phase 6, early Assistant memory and personality
 
 Completed:
 
@@ -40,13 +40,22 @@ Completed:
 - Phase 3: Health core
 - Phase 4: Planning and review engine
 - Phase 5: Assistant package foundation
+- Phase 6: Assistant memory and personality foundation
 
-What the assistant package adds now:
+Right now the assistant:
 
-- `POST /api/assistant/respond`
-- Intent classification for daily brief, evening reflection, and weekly review prompts
-- Natural-language responses generated from existing planning data
-- A clean place to later add memory, rules, and provider-based AI
+- matches a small set of intents
+- pulls from deterministic planning outputs
+- stores seeded assistant memory in PostgreSQL
+- uses a concise personality line in the daily brief
+- avoids exposing raw memory directly in user-facing responses
+
+It does not yet have:
+
+- provider-backed AI generation
+- Telegram delivery
+- advanced memory retrieval
+- broader reasoning across the full system
 
 ## Current API Surface
 

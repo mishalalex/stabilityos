@@ -5,17 +5,21 @@ import com.stabilityos.backend.planning.PlanningService;
 import com.stabilityos.backend.planning.dto.DailyBriefResponse;
 import com.stabilityos.backend.planning.dto.EveningReflectionResponse;
 import com.stabilityos.backend.planning.dto.WeeklyReviewResponse;
+import com.stabilityos.backend.memory.AssistantMemoryService;
+import com.stabilityos.backend.memory.dto.MemoryResponse;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class AssistantService {
 
     private final PlanningService planningService;
+    private final AssistantMemoryService memoryService;
 
-    public AssistantService(PlanningService planningService) {
+    public AssistantService(PlanningService planningService, AssistantMemoryService memoryService) {
         this.planningService = planningService;
+        this.memoryService = memoryService;
     }
-
     public AssistantResponse respond(String message) {
         AssistantIntent intent = classifyIntent(message);
 
@@ -28,8 +32,14 @@ public class AssistantService {
                     - What should I do today?
                     - How did I do today?
                     - How did my week go?
+            
+                    I will keep guidance direct and practical. The goal is consistency, not overthinking.
                     """);
         };
+    }
+
+    private String personalityLine() {
+        return "Direct mode: focus on consistency, avoid overthinking, and do the next useful action.";
     }
 
     private AssistantIntent classifyIntent(String message) {
@@ -69,7 +79,8 @@ public class AssistantService {
 
         String reply = """
                 Today's Stability Brief:
-
+                
+                %s
                 Finance:
                 %s
 
@@ -82,10 +93,11 @@ public class AssistantService {
                 Watch-out:
                 %s
                 """.formatted(
-                brief.financeAction(),
-                brief.healthAction(),
-                brief.workAction(),
-                brief.watchOut()
+                        personalityLine(),
+                        brief.financeAction(),
+                        brief.healthAction(),
+                        brief.workAction(),
+                        brief.watchOut()
         );
 
         return new AssistantResponse(reply);
