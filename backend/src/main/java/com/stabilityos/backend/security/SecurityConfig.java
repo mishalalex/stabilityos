@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers("/actuator/health/**").permitAll()
+                        .requestMatchers("/api/telegram/webhook").permitAll()
                         .anyRequest().hasRole("API_CLIENT")
                 )
                 .addFilterBefore(apiKeyAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

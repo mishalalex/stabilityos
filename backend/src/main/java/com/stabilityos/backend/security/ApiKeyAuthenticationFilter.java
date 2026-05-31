@@ -68,6 +68,7 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         return path.equals("/api/health")
-                || path.startsWith("/actuator/health");
+                || path.startsWith("/actuator/health")
+                || path.equals("/api/telegram/webhook");
     }
 }

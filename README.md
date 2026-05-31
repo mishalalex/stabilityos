@@ -15,6 +15,7 @@ Implemented backend modules:
 - `memory`: seeded assistant memory stored in PostgreSQL
 - `scheduler`: scheduled daily brief and news digest jobs
 - `delivery`: Telegram delivery adapter with log fallback
+- `telegram`: webhook ingress for inbound Telegram messages
 - `news`: manual news capture and daily digest generation
 - `input`: raw input inbox for text/media metadata ingestion
 
@@ -32,9 +33,9 @@ Spring Boot API
 
 ## Current Phase
 
-**Phase 10: Input Inbox Foundation**
+**Phase 10.5: Telegram Inbound Text Foundation**
 
-This branch adds an input-ingestion substrate on top of the earlier assistant, scheduling, Telegram delivery, and news-digest work.
+This branch adds Telegram webhook ingestion on top of the earlier input inbox, scheduling, delivery, and news-digest work.
 
 Current capabilities:
 
@@ -45,6 +46,9 @@ Current capabilities:
 - manual news-item capture and daily digest generation
 - scheduled news-digest delivery when items exist
 - input inbox storage with source, input type, Telegram metadata, status, and detected domain
+- Telegram webhook ingestion for inbound text messages
+- automatic input-inbox persistence for inbound Telegram text
+- acknowledgment delivery after successful inbound capture
 
 Current constraints:
 
@@ -60,6 +64,7 @@ Core:
 ```http
 GET /api/health
 POST /api/assistant/respond
+POST /api/telegram/webhook
 ```
 
 Finance:
@@ -105,6 +110,7 @@ GET /api/input-items?status=received
 Notes:
 
 - `/api/health` is the public health check.
+- `/api/telegram/webhook` is public at the API-key layer, but requires the Telegram webhook secret header.
 - Other `/api/**` routes are protected by the API key filter.
 - Memory, scheduler, and delivery features are configuration-driven, not exposed as public admin endpoints.
 
@@ -114,6 +120,7 @@ Key environment variables:
 
 - `STABILITYOS_API_KEY`
 - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
+- `STABILITYOS_TELEGRAM_WEBHOOK_SECRET`
 - `STABILITYOS_SCHEDULER_ENABLED`
 - `STABILITYOS_DAILY_BRIEF_CRON`
 - `STABILITYOS_NEWS_DIGEST_ENABLED`
@@ -162,19 +169,35 @@ Completed:
 7.5 Telegram Delivery Foundation
 8. News Digest Foundation
 8.5 News Digest Delivery Foundation
+9. Spring Security Hardening
+10. Input Inbox Foundation
 
 In progress:
 
-10. Input Inbox Foundation
-   Raw input capture is implemented; processing and routing are still ahead.
+10.5 Telegram Inbound Text Foundation
+   Webhook ingestion is implemented; broader input processing and routing are still ahead.
 
 Upcoming roadmap items:
 
-Phase numbering is preserved from the project plan.
-
-9. Obsidian Export
-11. Agent Experiments
-12. Appearance and Confidence Intelligence
+11. Assistant Persona Layer
+12. Draft and Confirmation Workflow
+13. Food Logging Core
+14. Local Screenshot OCR
+15. Local Voice Transcription
+16. AI Provider Interface
+17. Paid AI Food Photo Extraction
+18. Token, Cost, and Failure Fallback
+19. Memory Retrieval Upgrade
+20. Weekly Operating Review v2
+21. Automated News Ingestion
+22. News Relevance and Deduplication
+23. AI-Assisted News Summaries
+24. Obsidian / Markdown Export
+25. Paperclip Evaluation
+26. Hermes Evaluation
+27. Dashboard Foundation
+28. Agent Experiments
+29. Appearance and Confidence Intelligence
 
 ## Design Principles
 
