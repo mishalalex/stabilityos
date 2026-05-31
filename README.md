@@ -33,7 +33,7 @@ Spring Boot API
 
 ## Current Status
 
-**Current phase:** Phase 7.5, Telegram delivery foundation
+**Current phase:** Phase 8, news digest foundation
 
 Completed:
 
@@ -45,6 +45,8 @@ Completed:
 - Phase 4: Planning and review engine
 - Phase 5: Assistant package foundation
 - Phase 6: Assistant memory and personality foundation
+- Phase 7: Scheduled daily brief foundation
+- Phase 7.5: Telegram delivery foundation
 
 Right now the assistant:
 
@@ -55,6 +57,8 @@ Right now the assistant:
 - can generate a scheduled daily brief when scheduling is enabled
 - avoids exposing raw memory directly in user-facing responses
 - Scheduled daily brief can be delivered to Telegram when Telegram delivery is enabled
+- Manual news item capture
+- Daily news digest generated from stored news items
 
 It does not yet have:
 
@@ -112,12 +116,12 @@ Example request:
 }
 ```
 
-## Run Locally
+News:
 
-Start the stack:
-
-```bash
-docker compose up -d --build
+```http
+POST /api/news/items
+GET /api/news/items
+GET /api/news/daily-digest
 ```
 
 Smoke test:
@@ -170,22 +174,21 @@ The repo is being built phase by phase so each step stays usable on its own.
 
 ### Current Phase
 
-Phase 7 is active. This branch has started delivery automation through backend scheduling, but it does not have the Hermes/Telegram bridge yet.
+Phase 8 adds the news digest foundation.
 
-Right now the assistant:
+Right now the news module:
 
-- matches a small set of intents
-- pulls from deterministic planning outputs
-- returns plain natural-language summaries
-- seeds reusable memory into PostgreSQL
-- supports scheduled brief generation behind a feature flag
+- stores manually captured news items
+- groups news by date and region
+- generates a simple daily digest from stored items
+- prepares the system for future automated news ingestion
 
 It does not yet have:
 
-- provider-backed AI generation
-- Telegram delivery
-- advanced memory retrieval
-- broader reasoning across the full system
+- automatic news fetching
+- source ranking
+- AI-generated summaries
+- scheduled Telegram delivery of news digest
 
 ### Future Phases
 
@@ -199,6 +202,8 @@ It does not yet have:
    Orchestration only after the core assistant is reliable.
 11. Appearance and confidence intelligence
    Longer-horizon self-improvement tracking.
+12. Appearance and confidence intelligence
+        Longer-horizon self-improvement tracking.
 
 ## Design Principles
 
