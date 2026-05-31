@@ -24,5 +24,11 @@ stabilityos:
 
   scheduler:
     enabled: ${STABILITYOS_SCHEDULER_ENABLED:false}
-    daily-brief-cron: ${STABILITYOS_DAILY_BRIEF_CRON:0 30 8 * * *}
-    timezone: ${STABILITYOS_TIMEZONE:Asia/Kolkata}
+    daily-brief-cron: "${STABILITYOS_DAILY_BRIEF_CRON:0 30 8 * * *}"
+    timezone: "${STABILITYOS_TIMEZONE:Asia/Kolkata}"
+
+  delivery:
+    telegram:
+      enabled: ${STABILITYOS_TELEGRAM_ENABLED:false}
+      bot-token: ${STABILITYOS_TELEGRAM_BOT_TOKEN:}
+      chat-id: ${STABILITYOS_TELEGRAM_CHAT_ID:}

@@ -33,7 +33,7 @@ Spring Boot API
 
 ## Current Status
 
-**Current phase:** Phase 7, early scheduled delivery
+**Current phase:** Phase 7.5, Telegram delivery foundation
 
 Completed:
 
@@ -54,13 +54,15 @@ Right now the assistant:
 - uses a concise personality line in the daily brief
 - can generate a scheduled daily brief when scheduling is enabled
 - avoids exposing raw memory directly in user-facing responses
+- Scheduled daily brief can be delivered to Telegram when Telegram delivery is enabled
 
 It does not yet have:
 
 - provider-backed AI generation
-- Telegram delivery
 - advanced memory retrieval
 - broader reasoning across the full system
+
+Telegram delivery is configuration-driven. The backend can still run with Telegram disabled, in which case scheduled output falls back to logs.
 
 ## Current API Surface
 
