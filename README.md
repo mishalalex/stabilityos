@@ -12,6 +12,8 @@ StabilityOS already has working backend modules for:
 - Health logging
 - Planning and review summaries
 - Assistant-style text responses over the current data
+- Seeded assistant memory stored in PostgreSQL
+- Optional scheduled daily brief generation
 - API key protection, Flyway migrations, Docker Compose, and backup scripts
 
 Current backend flow:
@@ -22,14 +24,16 @@ Spring Boot API
   ├─ Health
   ├─ Planning
   └─ Assistant
-       └─ uses planning summaries and deterministic intent matching
+       ├─ uses planning summaries and deterministic intent matching
+       ├─ reads seeded memory/personality context
+       └─ can be triggered by scheduler
             ↓
         PostgreSQL
 ```
 
 ## Current Status
 
-**Current phase:** Phase 6, early Assistant memory and personality
+**Current phase:** Phase 7, early scheduled delivery
 
 Completed:
 
@@ -48,6 +52,7 @@ Right now the assistant:
 - pulls from deterministic planning outputs
 - stores seeded assistant memory in PostgreSQL
 - uses a concise personality line in the daily brief
+- can generate a scheduled daily brief when scheduling is enabled
 - avoids exposing raw memory directly in user-facing responses
 
 It does not yet have:
@@ -94,6 +99,8 @@ Assistant:
 ```http
 POST /api/assistant/respond
 ```
+
+No public memory or scheduler endpoints exist yet. Memory is seeded on startup and scheduling is driven by application configuration.
 
 Example request:
 
@@ -156,30 +163,32 @@ The repo is being built phase by phase so each step stays usable on its own.
    Daily brief, evening reflection, and weekly review endpoints.
 5. Assistant Brain, first cut
    A backend assistant endpoint that turns user prompts into structured planning responses.
+6. Memory and personality foundation
+   Seeded assistant memory, startup initialization, and personality-aware briefing.
 
 ### Current Phase
 
-Phase 5 is active, but still intentionally simple.
+Phase 7 is active. This branch has started delivery automation through backend scheduling, but it does not have the Hermes/Telegram bridge yet.
 
 Right now the assistant:
 
 - matches a small set of intents
 - pulls from deterministic planning outputs
 - returns plain natural-language summaries
+- seeds reusable memory into PostgreSQL
+- supports scheduled brief generation behind a feature flag
 
 It does not yet have:
 
-- persistent memory
 - provider-backed AI generation
 - Telegram delivery
+- advanced memory retrieval
 - broader reasoning across the full system
 
 ### Future Phases
 
-6. Memory and personality
-   Preferences, continuity, and longer-term behavioral context.
-7. Hermes integration
-   Telegram bridge and scheduled delivery.
+7. Delivery completion
+   Hermes bridge and Telegram delivery on top of the scheduler groundwork already in this branch.
 8. News digest
    Personal daily news summaries.
 9. Obsidian export
