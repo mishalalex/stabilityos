@@ -1,82 +1,65 @@
 # StabilityOS
 
-StabilityOS is a self-hosted personal operating system for life management, built as a serious Spring Boot portfolio project.
+StabilityOS is a self-hosted personal operations backend built with Spring Boot and PostgreSQL.
 
-The long-term goal is a private assistant that can track what happened, explain what matters, and suggest what to do next across finance, health, planning, and personal memory.
+The target system is a private assistant that can ingest inputs, maintain structured personal context, generate deterministic guidance, and later deliver that guidance through external channels.
 
-## What Exists Today
+## Current Scope
 
-StabilityOS already has working backend modules for:
+Implemented backend modules:
 
-- Finance tracking
-- Health logging
-- Planning and review summaries
-- Assistant-style text responses over the current data
-- Seeded assistant memory stored in PostgreSQL
-- Optional scheduled daily brief generation
-- API key protection, Flyway migrations, Docker Compose, and backup scripts
+- `finance`: expense capture and monthly summary
+- `health`: sleep, water, weight, mood logging and summary
+- `planning`: daily brief, evening reflection, weekly review
+- `assistant`: intent-based natural-language responses over planning outputs
+- `memory`: seeded assistant memory stored in PostgreSQL
+- `scheduler`: scheduled daily brief and news digest jobs
+- `delivery`: Telegram delivery adapter with log fallback
+- `news`: manual news capture and daily digest generation
+- `input`: raw input inbox for text/media metadata ingestion
 
-Current backend flow:
+Runtime shape:
 
 ```text
 Spring Boot API
-  ├─ Finance
-  ├─ Health
-  ├─ Planning
-  └─ Assistant
-       ├─ uses planning summaries and deterministic intent matching
-       ├─ reads seeded memory/personality context
-       └─ can be triggered by scheduler
-            ↓
-        PostgreSQL
+  ├─ domain modules
+  ├─ assistant orchestration
+  ├─ schedulers
+  └─ delivery adapters
+       ↓
+    PostgreSQL
 ```
 
-## Current Status
+## Current Phase
 
-**Current phase:** Phase 8.5, News Digest Telegram Delivery
+**Phase 10: Input Inbox Foundation**
 
-Completed:
+This branch adds an input-ingestion substrate on top of the earlier assistant, scheduling, Telegram delivery, and news-digest work.
 
-- Phase 1: Foundation
-- Phase 1.5: Config hardening
-- Phase 2: Finance core
-- Phase 2.5: API security
-- Phase 3: Health core
-- Phase 4: Planning and review engine
-- Phase 5: Assistant package foundation
-- Phase 6: Assistant memory and personality foundation
-- Phase 7: Scheduled daily brief foundation
-- Phase 7.5: Telegram delivery foundation
-- Phase 8: News Digest Foundation
-- Phase 8.5: News Digest Telegram Delivery
+Current capabilities:
 
-Right now the assistant:
+- deterministic assistant responses via `POST /api/assistant/respond`
+- seeded assistant memory via Flyway-backed persistence
+- scheduled daily brief generation
+- optional Telegram delivery for scheduled outputs
+- manual news-item capture and daily digest generation
+- scheduled news-digest delivery when items exist
+- input inbox storage with source, input type, Telegram metadata, status, and detected domain
 
-- matches a small set of intents
-- pulls from deterministic planning outputs
-- stores seeded assistant memory in PostgreSQL
-- uses a concise personality line in the daily brief
-- can generate a scheduled daily brief when scheduling is enabled
-- avoids exposing raw memory directly in user-facing responses
-- Scheduled daily brief can be delivered to Telegram when Telegram delivery is enabled
-- Manual news item capture
-- Daily news digest generated from stored news items
-- Scheduled news digest delivery to Telegram when stored news items exist
+Current constraints:
 
-It does not yet have:
+- no provider-backed AI generation
+- no advanced memory retrieval
+- no input-processing pipeline beyond storage and lightweight domain detection
+- no Hermes bridge yet
 
-- provider-backed AI generation
-- advanced memory retrieval
-- broader reasoning across the full system
+## API Surface
 
-Telegram delivery is configuration-driven. The backend can still run with Telegram disabled, in which case scheduled output falls back to logs.
-News digest delivery is schedule-driven. If there are no stored news items for the day, StabilityOS logs the digest but skips Telegram delivery to avoid noise.
-## Current API Surface
-
-Health check:
+Core:
 
 ```http
 GET /api/health
+POST /api/assistant/respond
 ```
 
 Finance:
@@ -103,22 +86,6 @@ GET /api/planning/evening-reflection
 GET /api/planning/weekly-review
 ```
 
-Assistant:
-
-```http
-POST /api/assistant/respond
-```
-
-No public memory or scheduler endpoints exist yet. Memory is seeded on startup and scheduling is driven by application configuration.
-
-Example request:
-
-```json
-{
-  "message": "What should I do today?"
-}
-```
-
 News:
 
 ```http
@@ -127,21 +94,46 @@ GET /api/news/items
 GET /api/news/daily-digest
 ```
 
-Smoke test:
+Input Inbox:
+
+```http
+POST /api/input-items
+GET /api/input-items
+GET /api/input-items?status=received
+```
+
+Notes:
+
+- `/api/health` is the public health check.
+- Other `/api/**` routes are protected by the API key filter.
+- Memory, scheduler, and delivery features are configuration-driven, not exposed as public admin endpoints.
+
+## Configuration
+
+Key environment variables:
+
+- `STABILITYOS_API_KEY`
+- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
+- `STABILITYOS_SCHEDULER_ENABLED`
+- `STABILITYOS_DAILY_BRIEF_CRON`
+- `STABILITYOS_NEWS_DIGEST_ENABLED`
+- `STABILITYOS_NEWS_DIGEST_CRON`
+- `STABILITYOS_TIMEZONE`
+- `STABILITYOS_TELEGRAM_ENABLED`
+- `STABILITYOS_TELEGRAM_BOT_TOKEN`
+- `STABILITYOS_TELEGRAM_CHAT_ID`
+
+Behavior:
+
+- when Telegram delivery is disabled, scheduled output is logged
+- when the news digest has zero items, Telegram delivery is skipped
+
+## Local Run
 
 ```bash
+docker compose up -d --build
 curl http://127.0.0.1:8080/api/health
-```
-
-Run tests:
-
-```bash
 ./backend/mvnw test
-```
-
-Create backups:
-
-```bash
 ./ops/backup.sh
 ```
 
@@ -150,80 +142,54 @@ Create backups:
 ```text
 stabilityos/
   backend/     Spring Boot application
-  docs/        planning and architecture notes
+  docs/        architecture and planning notes
   ops/         operational scripts
-  hermes/      future Telegram bridge
+  hermes/      reserved for future bridge integration
   backups/     local backup artifacts
 ```
 
-## Build Strategy
+## Phase Roadmap
 
-The repo is being built phase by phase so each step stays usable on its own.
+Completed:
 
-### Completed Phases
-
-1. Foundation
-   Spring Boot, PostgreSQL, Docker Compose, Flyway, health check, VPS portability.
+1. Foundation: Spring Boot, PostgreSQL, Docker Compose, Flyway, health check
 2. Finance Core
-   Expense logging and monthly summaries.
 3. Health Core
-   Sleep, water, weight, and health summaries.
 4. Planning and Review
-   Daily brief, evening reflection, and weekly review endpoints.
-5. Assistant Brain, first cut
-   A backend assistant endpoint that turns user prompts into structured planning responses.
-6. Memory and personality foundation
-   Seeded assistant memory, startup initialization, and personality-aware briefing.
+5. Assistant Brain Foundation
+6. Memory and Personality Foundation
+7. Scheduled Delivery Foundation
+7.5 Telegram Delivery Foundation
+8. News Digest Foundation
+8.5 News Digest Delivery Foundation
 
-### Current Phase
+In progress:
 
-Phase 8 adds the news digest foundation.
+10. Input Inbox Foundation
+   Raw input capture is implemented; processing and routing are still ahead.
 
-Right now the news module:
+Upcoming roadmap items:
 
-- stores manually captured news items
-- groups news by date and region
-- generates a simple daily digest from stored items
-- prepares the system for future automated news ingestion
+Phase numbering is preserved from the project plan.
 
-It does not yet have:
-
-- automatic news fetching
-- source ranking
-- AI-generated summaries
-- scheduled Telegram delivery of news digest
-
-### Future Phases
-
-7. Delivery completion
-   Hermes bridge and Telegram delivery on top of the scheduler groundwork already in this branch.
-8. News digest
-   Personal daily news summaries.
-9. Obsidian export
-   Markdown output for long-term review and archives.
-10. Agent experiments
-   Orchestration only after the core assistant is reliable.
-11. Appearance and confidence intelligence
-   Longer-horizon self-improvement tracking.
-12. Appearance and confidence intelligence
-        Longer-horizon self-improvement tracking.
+9. Obsidian Export
+11. Agent Experiments
+12. Appearance and Confidence Intelligence
 
 ## Design Principles
 
-- Spring Boot is the source of truth.
-- PostgreSQL stores structured personal data.
-- Keep the core deterministic before adding heavier AI orchestration.
-- Avoid provider lock-in.
-- Keep local development and VPS deployment portable.
-- Treat GitHub and backups as the durable source of truth.
+- Spring Boot is the system of record.
+- PostgreSQL holds structured state.
+- Core reasoning stays deterministic before heavier AI orchestration.
+- Delivery adapters stay replaceable.
+- Scheduler and transport concerns remain outside the core domain logic.
+- Local development and VPS deployment must stay portable.
 
-## Long-Term Direction
+## Direction
 
-The target experience is a private assistant that can answer questions like:
+The target end state is a private assistant that can:
 
-- What should I focus on today?
-- What slipped this week?
-- What patterns are improving or getting worse?
-- What should I correct next?
-
-The goal is not just tracking data. The goal is better decisions, better routines, and long-term personal stability.
+- ingest personal inputs from multiple channels
+- classify and store them safely
+- synthesize daily and weekly guidance
+- deliver useful output without requiring manual backfilling
