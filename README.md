@@ -13,11 +13,13 @@ Implemented backend modules:
 - `planning`: daily brief, evening reflection, weekly review
 - `assistant`: intent-based natural-language responses over planning outputs
 - `memory`: seeded assistant memory stored in PostgreSQL
+- `persona`: deterministic assistant persona composed from seeded memory
 - `scheduler`: scheduled daily brief and news digest jobs
 - `delivery`: Telegram delivery adapter with log fallback
 - `telegram`: webhook ingress for inbound Telegram messages
 - `news`: manual news capture and daily digest generation
 - `input`: raw input inbox for text/media metadata ingestion
+- `draft`: action-draft creation and explicit confirm/reject workflow over captured inputs
 
 Runtime shape:
 
@@ -33,9 +35,9 @@ Spring Boot API
 
 ## Current Phase
 
-**Phase 10.5: Telegram Inbound Text Foundation**
+**Phase 12: Draft and Confirmation Workflow Foundation**
 
-This branch adds Telegram webhook ingestion on top of the earlier input inbox, scheduling, delivery, and news-digest work.
+This branch builds on the input inbox, persona, and Telegram ingress work by adding a reviewable draft layer for captured inputs before downstream action.
 
 Current capabilities:
 
@@ -51,12 +53,17 @@ Current capabilities:
 - acknowledgment delivery after successful inbound capture
 - reusable deterministic assistant persona derived from seeded memory
 - protected persona inspection endpoint via `GET /api/assistant/persona`
+- action-draft generation from captured input items
+- draft typing based on detected input domain
+- explicit draft confirmation and rejection with optional decision notes
+- persistent draft audit fields including status, created time, decision time, and decision note
 
 Current constraints:
 
 - no provider-backed AI generation
 - no advanced memory retrieval
-- no input-processing pipeline beyond storage and lightweight domain detection
+- no automatic execution of confirmed drafts into downstream modules yet
+- no input-processing pipeline beyond storage, lightweight domain detection, and manual draft generation
 - no Hermes bridge yet
 
 ## API Surface
@@ -66,6 +73,7 @@ Core:
 ```http
 GET /api/health
 POST /api/assistant/respond
+GET /api/assistant/persona
 POST /api/telegram/webhook
 ```
 
@@ -107,6 +115,16 @@ Input Inbox:
 POST /api/input-items
 GET /api/input-items
 GET /api/input-items?status=received
+```
+
+Drafts:
+
+```http
+POST /api/action-drafts/from-input/{inputItemId}
+GET /api/action-drafts
+GET /api/action-drafts?status=pending
+POST /api/action-drafts/{id}/confirm
+POST /api/action-drafts/{id}/reject
 ```
 
 Notes:
@@ -174,14 +192,11 @@ Completed:
 9. Spring Security Hardening
 10. Input Inbox Foundation
 10.5 Telegram Inbound Text Foundation
-
-In progress:
-
-**Phase 11: Assistant Persona Layer**
+11. Assistant Persona Layer
+12. Draft and Confirmation Workflow Foundation
 
 Upcoming roadmap items:
 
-12. Draft and Confirmation Workflow
 13. Food Logging Core
 14. Local Screenshot OCR
 15. Local Voice Transcription
