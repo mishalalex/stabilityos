@@ -49,6 +49,8 @@ Current capabilities:
 - Telegram webhook ingestion for inbound text messages
 - automatic input-inbox persistence for inbound Telegram text
 - acknowledgment delivery after successful inbound capture
+- reusable deterministic assistant persona derived from seeded memory
+- protected persona inspection endpoint via `GET /api/assistant/persona`
 
 Current constraints:
 
@@ -171,15 +173,14 @@ Completed:
 8.5 News Digest Delivery Foundation
 9. Spring Security Hardening
 10. Input Inbox Foundation
+10.5 Telegram Inbound Text Foundation
 
 In progress:
 
-10.5 Telegram Inbound Text Foundation
-   Webhook ingestion is implemented; broader input processing and routing are still ahead.
+**Phase 11: Assistant Persona Layer**
 
 Upcoming roadmap items:
 
-11. Assistant Persona Layer
 12. Draft and Confirmation Workflow
 13. Food Logging Core
 14. Local Screenshot OCR

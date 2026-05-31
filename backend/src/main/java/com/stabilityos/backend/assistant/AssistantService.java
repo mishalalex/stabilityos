@@ -1,6 +1,7 @@
 package com.stabilityos.backend.assistant;
 
 import com.stabilityos.backend.assistant.dto.AssistantResponse;
+import com.stabilityos.backend.persona.AssistantPersonaService;
 import com.stabilityos.backend.planning.PlanningService;
 import com.stabilityos.backend.planning.dto.DailyBriefResponse;
 import com.stabilityos.backend.planning.dto.EveningReflectionResponse;
@@ -11,9 +12,13 @@ import org.springframework.stereotype.Service;
 public class AssistantService {
 
     private final PlanningService planningService;
+    private final AssistantPersonaService assistantPersonaService;
 
-    public AssistantService(PlanningService planningService) {
+    public AssistantService(PlanningService planningService,
+                            AssistantPersonaService assistantPersonaService
+    ) {
         this.planningService = planningService;
+        this.assistantPersonaService = assistantPersonaService;
     }
 
     public AssistantResponse respond(String message) {
@@ -23,19 +28,14 @@ public class AssistantService {
             case DAILY_BRIEF -> dailyBriefResponse();
             case EVENING_REFLECTION -> eveningReflectionResponse();
             case WEEKLY_REVIEW -> weeklyReviewResponse();
-            case UNKNOWN -> new AssistantResponse("""
-                    I can help with:
-                    - What should I do today?
-                    - How did I do today?
-                    - How did my week go?
-            
-                    I will keep guidance direct and practical. The goal is consistency, not overthinking.
-                    """);
+            case UNKNOWN -> new AssistantResponse(
+                    assistantPersonaService.unknownIntentGuidance()
+            );
         };
     }
 
     private String personalityLine() {
-        return "Direct mode: focus on consistency, avoid overthinking, and do the next useful action.";
+        return assistantPersonaService.personaLine();
     }
 
     private AssistantIntent classifyIntent(String message) {
