@@ -33,7 +33,7 @@ Spring Boot API
 
 ## Current Status
 
-**Current phase:** Phase 8, news digest foundation
+**Current phase:** Phase 8.5, News Digest Telegram Delivery
 
 Completed:
 
@@ -47,6 +47,8 @@ Completed:
 - Phase 6: Assistant memory and personality foundation
 - Phase 7: Scheduled daily brief foundation
 - Phase 7.5: Telegram delivery foundation
+- Phase 8: News Digest Foundation
+- Phase 8.5: News Digest Telegram Delivery
 
 Right now the assistant:
 
@@ -59,6 +61,7 @@ Right now the assistant:
 - Scheduled daily brief can be delivered to Telegram when Telegram delivery is enabled
 - Manual news item capture
 - Daily news digest generated from stored news items
+- Scheduled news digest delivery to Telegram when stored news items exist
 
 It does not yet have:
 
@@ -67,7 +70,7 @@ It does not yet have:
 - broader reasoning across the full system
 
 Telegram delivery is configuration-driven. The backend can still run with Telegram disabled, in which case scheduled output falls back to logs.
-
+News digest delivery is schedule-driven. If there are no stored news items for the day, StabilityOS logs the digest but skips Telegram delivery to avoid noise.
 ## Current API Surface
 
 Health check:

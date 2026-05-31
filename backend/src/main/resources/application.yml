@@ -25,6 +25,8 @@ stabilityos:
   scheduler:
     enabled: ${STABILITYOS_SCHEDULER_ENABLED:false}
     daily-brief-cron: "${STABILITYOS_DAILY_BRIEF_CRON:0 30 8 * * *}"
+    news-digest-enabled: ${STABILITYOS_NEWS_DIGEST_ENABLED:false}
+    news-digest-cron: "${STABILITYOS_NEWS_DIGEST_CRON:0 0 9 * * *}"
     timezone: "${STABILITYOS_TIMEZONE:Asia/Kolkata}"
 
   delivery:
