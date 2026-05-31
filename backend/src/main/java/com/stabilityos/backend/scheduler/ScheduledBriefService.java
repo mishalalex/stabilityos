@@ -2,6 +2,7 @@ package com.stabilityos.backend.scheduler;
 
 import com.stabilityos.backend.assistant.AssistantService;
 import com.stabilityos.backend.assistant.dto.AssistantResponse;
+import com.stabilityos.backend.delivery.NotificationDeliveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,9 +16,14 @@ public class ScheduledBriefService {
     private static final Logger log = LoggerFactory.getLogger(ScheduledBriefService.class);
 
     private final AssistantService assistantService;
+    private final NotificationDeliveryService notificationDeliveryService;
 
-    public ScheduledBriefService(AssistantService assistantService) {
+    public ScheduledBriefService(
+            AssistantService assistantService,
+            NotificationDeliveryService notificationDeliveryService
+    ) {
         this.assistantService = assistantService;
+        this.notificationDeliveryService = notificationDeliveryService;
     }
 
     @Scheduled(
@@ -33,5 +39,7 @@ public class ScheduledBriefService {
                 
                 {}
                 """, response.reply());
+
+        notificationDeliveryService.send("Today's Stability Brief", response.reply());
     }
 }
