@@ -6,20 +6,17 @@ import com.stabilityos.backend.planning.dto.DailyBriefResponse;
 import com.stabilityos.backend.planning.dto.EveningReflectionResponse;
 import com.stabilityos.backend.planning.dto.WeeklyReviewResponse;
 import com.stabilityos.backend.memory.AssistantMemoryService;
-import com.stabilityos.backend.memory.dto.MemoryResponse;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 @Service
 public class AssistantService {
 
     private final PlanningService planningService;
-    private final AssistantMemoryService memoryService;
 
-    public AssistantService(PlanningService planningService, AssistantMemoryService memoryService) {
+    public AssistantService(PlanningService planningService) {
         this.planningService = planningService;
-        this.memoryService = memoryService;
     }
+
     public AssistantResponse respond(String message) {
         AssistantIntent intent = classifyIntent(message);
 
