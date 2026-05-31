@@ -22,23 +22,18 @@ This project is also a serious Spring Boot portfolio project.
 
 ### Completed
 
-* Phase 1: Portable Spring Boot foundation
-* Local Docker setup
-* VPS Docker deployment
-* PostgreSQL container
-* Spring Boot backend
-* Flyway migration setup
-* `/api/health`
-* Backup script
-* GitHub repo setup
+- Phase 1: Portable Spring Boot foundation
+- Phase 1.5: Config hardening
+- Phase 2: Finance Core
+- Phase 2.5: API Security
+- Phase 3: Health Core
 
 ### In Progress
 
-* Phase 2: Finance Core
-
-    * Expense logging
-    * Expense listing
-    * Monthly spending summary
+- Phase 4: Planning and Review Engine
+  - Daily brief
+  - Evening reflection
+  - Weekly review
 
 ---
 
@@ -285,7 +280,7 @@ Create a portable foundation that can be moved to a new VPS easily.
 
 ---
 
-### Phase 2 — Finance Core 🚧
+### Phase 2 — Finance Core ✅
 
 Built:
 
@@ -312,7 +307,7 @@ Start tracking real daily spending.
 
 ---
 
-### Phase 3 — Health Core
+### Phase 3 — Health Core ✅
 
 Built:
 
@@ -327,7 +322,7 @@ Give StabilityOS personal health context.
 
 ---
 
-### Phase 4 — Planning and Review
+### Phase 4 — Planning and Review ✅
 
 Build:
 
@@ -341,7 +336,7 @@ Turn raw data into daily and weekly guidance.
 
 ---
 
-### Phase 5 — Assistant Brain
+### Phase 5 — Assistant Brain 🚧
 
 Build:
 

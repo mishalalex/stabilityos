@@ -9,5 +9,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     List<Expense> findByEntryDateGreaterThanEqualOrderByEntryDateDescIdDesc(LocalDate startDate);
 
+    List<Expense> findByEntryDateBetweenOrderByEntryDateDescIdDesc(LocalDate startDate, LocalDate endDate);
+
     List<Expense> findAllByOrderByEntryDateDescIdDesc();
 }

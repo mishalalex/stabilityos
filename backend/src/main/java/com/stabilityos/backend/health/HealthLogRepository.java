@@ -7,5 +7,8 @@ import java.util.List;
 
 public interface HealthLogRepository extends JpaRepository<HealthLog, Long> {
     List<HealthLog> findAllByOrderByEntryDateDescIdDesc();
+
     List<HealthLog> findByEntryDateGreaterThanEqualOrderByEntryDateDescIdDesc(LocalDate startDate);
+
+    List<HealthLog> findByEntryDateBetweenOrderByEntryDateDescIdDesc(LocalDate startDate, LocalDate endDate);
 }
