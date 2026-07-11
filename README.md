@@ -2,9 +2,15 @@
 
 StabilityOS is a self-hosted executive-function operating system built with Spring Boot and PostgreSQL.
 
-It is designed to help capture inputs, maintain structured personal context, protect attention, reduce cognitive debt, and convert insights into action.
+## Core Philosophy
 
-The target user is a high-curiosity systems thinker who is strong at synthesis and mental-model building, but vulnerable to fragmented attention, too many open loops, and excessive input accumulation.
+Reduce the executive-function burden required to run user’s life.
+
+StabilityOS should not become another information collector, productivity toy, or high-quality distraction engine. 
+
+Its purpose is to reduce the mental effort required to capture, decide, remember, prioritize, follow through, and recover from daily life demands.
+
+The system exists to help user run his life with fewer open loops, fewer repeated decisions, fewer forgotten commitments, fewer context switches, and less dependence on willpower.
 
 ## Current Scope
 
@@ -37,15 +43,17 @@ Spring Boot API
 
 ## Current Phase
 
-**Phase 12.5: Product Realignment and Codebase Understanding**
+**Phase 12.6: Core Philosophy Realignment**
 
-This is not a feature-expansion phase. It is a consolidation phase to realign StabilityOS around executive function and to ensure the codebase is understood before more capabilities are added.
+This is not a feature-expansion phase. 
+It is a consolidation phase to realign StabilityOS around executive function and to ensure the codebase is understood before more capabilities are added.
 
 Current focus:
 
-- development is paused briefly for understanding and alignment
-- README and roadmap should reflect the executive-function thesis
-- future phases should reduce fragmentation, not add more information streams
+- make the core philosophy explicit: reduce the executive-function burden required to run Mishal’s life
+- verify the actual backend state before planning new phases
+- ensure upcoming phases reduce life-management load instead of adding more capture surfaces
+- keep StabilityOS biased toward closure, decision support, reminders, recovery, and execution
 
 Current capabilities:
 
@@ -257,40 +265,44 @@ Current:
 
 Recommended upcoming roadmap:
 
-13. Cognitive Debt Foundation
-14. Attention Governor
+13. Cognitive Burden Ledger
+14. Open Loop Capture and Closure
 15. Commitment Ledger
-16. Focus Session Tracker
-17. Insight-to-Action Converter
-18. Food Logging Core
-19. Local Screenshot OCR
-20. Local Voice Transcription
-21. AI Provider Interface
-22. Paid AI Food Photo Extraction
-23. Token, Cost, and Failure Fallback
-24. Memory Retrieval Upgrade
-25. Weekly Operating Review v2
-26. Automated News Ingestion, delayed and constrained
-27. News Relevance and Deduplication
-28. AI-Assisted News Summaries
-29. Obsidian / Markdown Export
-30. Paperclip Evaluation
-31. Hermes Evaluation
-32. Dashboard Foundation
-33. Agent Experiments
-34. Appearance and Confidence Intelligence
+16. Attention Governor
+17. Daily Load Planner
+18. Focus Session Tracker
+19. Insight-to-Action Converter
+20. Food Logging Core
+21. Local Screenshot OCR
+22. Local Voice Transcription
+23. AI Provider Interface
+24. Paid AI Food Photo Extraction
+25. Token, Cost, and Failure Fallback
+26. Memory Retrieval Upgrade
+27. Weekly Operating Review v2
+28. Automated News Ingestion, delayed and constrained
+29. News Relevance and Deduplication
+30. AI-Assisted News Summaries
+31. Obsidian / Markdown Export
+32. Paperclip Evaluation
+33. Hermes Evaluation
+34. Dashboard Foundation
+35. Agent Experiments
+36. Appearance and Confidence Intelligence
 
 Automated news, Paperclip, Hermes, agents, dashboard polish, and appearance intelligence are intentionally delayed because they may satisfy curiosity without improving execution unless executive-function rails are built first.
 
 ## Design Principles
 
+- The core purpose is to reduce the executive-function burden required to run Mishal’s life.
 - Spring Boot remains the system of record.
 - PostgreSQL holds structured state.
-- Capture should lead to triage, closure, or action.
+- Capture should lead to triage, closure, delegation, scheduling, or action.
 - The system should reduce cognitive fragmentation, not increase it.
 - The assistant should protect attention, not merely provide more information.
 - Drafts and confirmation are required before uncertain inputs mutate final records.
-- News and knowledge capture must be constrained.
+- News and knowledge capture must stay constrained until attention governance exists.
+- Every new phase must answer: “Does this reduce Mishal’s life-management burden?”
 - User understanding of the codebase is part of the product goal.
 - Local development and VPS deployment must stay portable.
 
@@ -298,11 +310,12 @@ Automated news, Paperclip, Hermes, agents, dashboard polish, and appearance inte
 
 The target end state is a private executive-function OS that can:
 
-- ingest personal inputs
-- classify and store them safely
-- identify open loops and cognitive debt
-- convert insights into decisions, commitments, habits, or parked ideas
-- protect daily attention
+- capture personal inputs with minimal friction
+- identify open loops, commitments, decisions, reminders, and unresolved burdens
+- reduce repeated decision-making
+- convert vague thoughts into clear next actions or parked items
+- protect attention from unnecessary information intake
+- help Mishal recover when routines break
 - synthesize daily and weekly correction loops
 - deliver concise, useful guidance through Telegram
 - avoid becoming a high-quality distraction engine
