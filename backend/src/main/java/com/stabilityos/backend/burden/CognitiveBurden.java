@@ -1,9 +1,14 @@
 package com.stabilityos.backend.burden;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "cognitive_burdens")
 public class CognitiveBurden {
@@ -45,9 +50,6 @@ public class CognitiveBurden {
     @Column(name = "resolution_note", columnDefinition = "TEXT")
     private String resolutionNote;
 
-    protected CognitiveBurden() {
-    }
-
     public CognitiveBurden(
             Long inputItemId,
             String title,
@@ -79,53 +81,5 @@ public class CognitiveBurden {
         this.status = "parked";
         this.resolutionNote = note;
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getInputItemId() {
-        return inputItemId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getBurdenType() {
-        return burdenType;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public int getBurdenScore() {
-        return burdenScore;
-    }
-
-    public String getNextAction() {
-        return nextAction;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public LocalDateTime getResolvedAt() {
-        return resolvedAt;
-    }
-
-    public String getResolutionNote() {
-        return resolutionNote;
     }
 }

@@ -1,10 +1,15 @@
 package com.stabilityos.backend.news;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "news_items")
 public class NewsItem {
@@ -37,9 +42,6 @@ public class NewsItem {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    protected NewsItem() {
-    }
-
     public NewsItem(
             String region,
             String title,
@@ -57,41 +59,5 @@ public class NewsItem {
         this.importance = importance;
         this.newsDate = newsDate;
         this.createdAt = LocalDateTime.now();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public String getSourceName() {
-        return sourceName;
-    }
-
-    public String getSourceUrl() {
-        return sourceUrl;
-    }
-
-    public Integer getImportance() {
-        return importance;
-    }
-
-    public LocalDate getNewsDate() {
-        return newsDate;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
     }
 }

@@ -1,9 +1,14 @@
 package com.stabilityos.backend.draft;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "action_drafts")
 public class ActionDraft {
@@ -36,9 +41,6 @@ public class ActionDraft {
     @Column(name = "decision_note", columnDefinition = "TEXT")
     private String decisionNote;
 
-    protected ActionDraft() {
-    }
-
     public ActionDraft(
             Long inputItemId,
             String draftType,
@@ -64,41 +66,5 @@ public class ActionDraft {
         this.status = "rejected";
         this.decidedAt = LocalDateTime.now();
         this.decisionNote = note;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getInputItemId() {
-        return inputItemId;
-    }
-
-    public String getDraftType() {
-        return draftType;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getProposedAction() {
-        return proposedAction;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getDecidedAt() {
-        return decidedAt;
-    }
-
-    public String getDecisionNote() {
-        return decisionNote;
     }
 }

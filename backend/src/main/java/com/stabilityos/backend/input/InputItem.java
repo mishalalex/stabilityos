@@ -1,9 +1,14 @@
 package com.stabilityos.backend.input;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "input_items")
 public class InputItem {
@@ -42,9 +47,6 @@ public class InputItem {
     @Column(name = "processed_at")
     private LocalDateTime processedAt;
 
-    protected InputItem() {
-    }
-
     public InputItem(
             String source,
             String inputType,
@@ -64,49 +66,5 @@ public class InputItem {
         this.detectedDomain = detectedDomain;
         this.errorMessage = errorMessage;
         this.createdAt = LocalDateTime.now();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public String getInputType() {
-        return inputType;
-    }
-
-    public String getRawText() {
-        return rawText;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public String getTelegramMessageId() {
-        return telegramMessageId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getDetectedDomain() {
-        return detectedDomain;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getProcessedAt() {
-        return processedAt;
     }
 }

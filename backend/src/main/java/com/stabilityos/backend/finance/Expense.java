@@ -1,10 +1,16 @@
 package com.stabilityos.backend.finance;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "expenses")
 public class Expense {
@@ -28,38 +34,11 @@ public class Expense {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    protected Expense() {
-    }
-
     public Expense(BigDecimal amount, String category, String note, LocalDate entryDate) {
         this.amount = amount;
         this.category = category;
         this.note = note;
         this.entryDate = entryDate;
         this.createdAt = LocalDateTime.now();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public LocalDate getEntryDate() {
-        return entryDate;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
     }
 }
