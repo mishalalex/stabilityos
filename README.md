@@ -28,6 +28,7 @@ Implemented backend modules:
 - `input`: raw input inbox for text/media metadata ingestion
 - `telegram`: inbound Telegram text receiver
 - `draft`: action draft and confirmation workflow
+- `burden`: cognitive burden ledger for open loops, decisions, reminders, worries, and unresolved mental load
 
 Runtime shape:
 
@@ -43,10 +44,9 @@ Spring Boot API
 
 ## Current Phase
 
-**Phase 12.6: Core Philosophy Realignment**
+**Phase 13: Cognitive Burden Ledger**
 
-This is not a feature-expansion phase. 
-It is a consolidation phase to realign StabilityOS around executive function and to ensure the codebase is understood before more capabilities are added.
+This phase adds a simple ledger for tracking unresolved mental load: open loops, decisions, reminders, worries, tasks, and parked items.
 
 Current focus:
 
@@ -69,6 +69,11 @@ Current capabilities:
 - Telegram inbound text receiver
 - action-draft creation from inputs
 - pending, confirmed, and rejected draft workflow
+- manual cognitive burden creation
+- cognitive burden creation from captured input items
+- open, parked, and closed burden states
+- burden score from 1 to 5
+- next-action field for reducing vague mental load
 
 Current constraints:
 
@@ -149,6 +154,16 @@ GET /api/action-drafts
 GET /api/action-drafts?status=pending
 POST /api/action-drafts/{id}/confirm
 POST /api/action-drafts/{id}/reject
+```
+
+Burdens:
+```http
+POST /api/cognitive-burdens
+POST /api/cognitive-burdens/from-input/{inputItemId}
+GET /api/cognitive-burdens
+GET /api/cognitive-burdens?status=open
+POST /api/cognitive-burdens/{id}/close
+POST /api/cognitive-burdens/{id}/park
 ```
 
 Notes:
@@ -253,19 +268,14 @@ Completed:
 10. Input Inbox Foundation
 10.5 Telegram Inbound Text Receiver
 11. Assistant Persona Layer
-12. Draft Confirmation Workflow
+12. Draft Confirmation Workflow 
+12.6 Core Philosophy Realignment
 
 Current:
 
-12.5 Product Realignment and Codebase Understanding
-
-- update product thesis
-- understand current codebase before continuing development
-- ensure future phases improve executive function rather than curiosity-driven collection
+13. Cognitive Burden Ledger
 
 Recommended upcoming roadmap:
-
-13. Cognitive Burden Ledger
 14. Open Loop Capture and Closure
 15. Commitment Ledger
 16. Attention Governor
