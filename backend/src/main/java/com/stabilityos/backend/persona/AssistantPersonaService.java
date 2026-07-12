@@ -3,18 +3,16 @@ package com.stabilityos.backend.persona;
 import com.stabilityos.backend.memory.AssistantMemoryService;
 import com.stabilityos.backend.memory.dto.MemoryResponse;
 import com.stabilityos.backend.persona.dto.AssistantPersonaResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class AssistantPersonaService {
 
     private final AssistantMemoryService assistantMemoryService;
-
-    public AssistantPersonaService(AssistantMemoryService assistantMemoryService) {
-        this.assistantMemoryService = assistantMemoryService;
-    }
 
     public AssistantPersonaResponse getPersona() {
         List<String> principles = assistantMemoryService.getTopMemories()

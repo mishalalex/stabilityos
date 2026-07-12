@@ -6,20 +6,15 @@ import com.stabilityos.backend.planning.PlanningService;
 import com.stabilityos.backend.planning.dto.DailyBriefResponse;
 import com.stabilityos.backend.planning.dto.EveningReflectionResponse;
 import com.stabilityos.backend.planning.dto.WeeklyReviewResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service
 public class AssistantService {
 
     private final PlanningService planningService;
     private final AssistantPersonaService assistantPersonaService;
-
-    public AssistantService(PlanningService planningService,
-                            AssistantPersonaService assistantPersonaService
-    ) {
-        this.planningService = planningService;
-        this.assistantPersonaService = assistantPersonaService;
-    }
 
     public AssistantResponse respond(String message) {
         AssistantIntent intent = classifyIntent(message);

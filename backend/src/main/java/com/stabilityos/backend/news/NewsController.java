@@ -4,20 +4,18 @@ import com.stabilityos.backend.news.dto.CreateNewsItemRequest;
 import com.stabilityos.backend.news.dto.DailyNewsDigestResponse;
 import com.stabilityos.backend.news.dto.NewsItemResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/news")
 public class NewsController {
 
     private final NewsService newsService;
-
-    public NewsController(NewsService newsService) {
-        this.newsService = newsService;
-    }
 
     @PostMapping("/items")
     public NewsItemResponse createNewsItem(@Valid @RequestBody CreateNewsItemRequest request) {

@@ -1,11 +1,16 @@
 package com.stabilityos.backend.health;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "health_logs")
 public class HealthLog {
@@ -35,9 +40,6 @@ public class HealthLog {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    protected HealthLog() {
-    }
-
     public HealthLog(
             BigDecimal sleepHours,
             BigDecimal waterLiters,
@@ -53,37 +55,5 @@ public class HealthLog {
         this.notes = notes;
         this.entryDate = entryDate;
         this.createdAt = LocalDateTime.now();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public BigDecimal getSleepHours() {
-        return sleepHours;
-    }
-
-    public BigDecimal getWaterLiters() {
-        return waterLiters;
-    }
-
-    public BigDecimal getWeightKg() {
-        return weightKg;
-    }
-
-    public String getMood() {
-        return mood;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public LocalDate getEntryDate() {
-        return entryDate;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
     }
 }

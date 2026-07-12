@@ -44,9 +44,11 @@ Spring Boot API
 
 ## Current Phase
 
-**Phase 13: Cognitive Burden Ledger**
+**Phase 13.5: Lombok Codebase Simplification**
 
-This phase adds a simple ledger for tracking unresolved mental load: open loops, decisions, reminders, worries, tasks, and parked items.
+This phase simplifies the existing Java codebase by replacing repetitive constructors, protected JPA no-arg constructors, and getter methods with Lombok annotations where appropriate.
+
+No backend behavior, endpoint behavior, database schema, or API response shape changes are introduced.
 
 Current focus:
 
@@ -74,6 +76,10 @@ Current capabilities:
 - open, parked, and closed burden states
 - burden score from 1 to 5
 - next-action field for reducing vague mental load
+- Lombok-backed constructor injection for Spring services/controllers/config classes
+- Lombok-backed getters and protected no-arg constructors for JPA entities
+- DTO records retained as records
+- explicit constructors retained where Spring `@Value` injection or domain-controlled construction is clearer
 
 Current constraints:
 
@@ -270,10 +276,10 @@ Completed:
 11. Assistant Persona Layer
 12. Draft Confirmation Workflow 
 12.6 Core Philosophy Realignment
+13. Cognitive Burden Ledger
 
 Current:
-
-13. Cognitive Burden Ledger
+13.5 Lombok Codebase Simplification
 
 Recommended upcoming roadmap:
 14. Open Loop Capture and Closure

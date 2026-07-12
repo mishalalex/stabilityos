@@ -4,10 +4,12 @@ import com.stabilityos.backend.burden.dto.CognitiveBurdenResponse;
 import com.stabilityos.backend.burden.dto.CreateCognitiveBurdenRequest;
 import com.stabilityos.backend.input.InputItem;
 import com.stabilityos.backend.input.InputItemRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class CognitiveBurdenService {
 
@@ -15,14 +17,6 @@ public class CognitiveBurdenService {
 
     private final CognitiveBurdenRepository cognitiveBurdenRepository;
     private final InputItemRepository inputItemRepository;
-
-    public CognitiveBurdenService(
-            CognitiveBurdenRepository cognitiveBurdenRepository,
-            InputItemRepository inputItemRepository
-    ) {
-        this.cognitiveBurdenRepository = cognitiveBurdenRepository;
-        this.inputItemRepository = inputItemRepository;
-    }
 
     public CognitiveBurdenResponse createBurden(CreateCognitiveBurdenRequest request) {
         CognitiveBurden burden = new CognitiveBurden(

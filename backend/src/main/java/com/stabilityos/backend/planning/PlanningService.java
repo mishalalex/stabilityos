@@ -7,6 +7,7 @@ import com.stabilityos.backend.health.HealthLogRepository;
 import com.stabilityos.backend.planning.dto.DailyBriefResponse;
 import com.stabilityos.backend.planning.dto.EveningReflectionResponse;
 import com.stabilityos.backend.planning.dto.WeeklyReviewResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,19 +15,12 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 
+@RequiredArgsConstructor
 @Service
 public class PlanningService {
 
     private final ExpenseRepository expenseRepository;
     private final HealthLogRepository healthLogRepository;
-
-    public PlanningService(
-            ExpenseRepository expenseRepository,
-            HealthLogRepository healthLogRepository
-    ) {
-        this.expenseRepository = expenseRepository;
-        this.healthLogRepository = healthLogRepository;
-    }
 
     public DailyBriefResponse getDailyBrief() {
         LocalDate today = LocalDate.now();

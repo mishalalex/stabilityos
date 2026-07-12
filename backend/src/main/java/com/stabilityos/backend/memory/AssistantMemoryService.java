@@ -1,18 +1,16 @@
 package com.stabilityos.backend.memory;
 
 import com.stabilityos.backend.memory.dto.MemoryResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class AssistantMemoryService {
 
     private final AssistantMemoryRepository repository;
-
-    public AssistantMemoryService(AssistantMemoryRepository repository) {
-        this.repository = repository;
-    }
 
     public void seedDefaultMemoriesIfMissing() {
         createIfMissing(
