@@ -29,6 +29,7 @@ Implemented backend modules:
 - `telegram`: inbound Telegram text receiver
 - `draft`: action draft and confirmation workflow
 - `burden`: cognitive burden ledger for open loops, decisions, reminders, worries, and unresolved mental load
+- `openloop`: open loop capture and closure workflow for unresolved decisions, reminders, tasks, and worries
 
 Runtime shape:
 
@@ -44,11 +45,9 @@ Spring Boot API
 
 ## Current Phase
 
-**Phase 13.5: Lombok Codebase Simplification**
+**Phase 14: Open Loop Capture and Closure**
 
-This phase simplifies the existing Java codebase by replacing repetitive constructors, protected JPA no-arg constructors, and getter methods with Lombok annotations where appropriate.
-
-No backend behavior, endpoint behavior, database schema, or API response shape changes are introduced.
+This phase adds a dedicated workflow for turning unresolved mental load into explicit open loops with closure conditions, next actions, review dates, and close/park decisions.
 
 Current focus:
 
@@ -80,6 +79,12 @@ Current capabilities:
 - Lombok-backed getters and protected no-arg constructors for JPA entities
 - DTO records retained as records
 - explicit constructors retained where Spring `@Value` injection or domain-controlled construction is clearer
+- manual open loop creation
+- open loop creation from captured input items
+- open loop creation from cognitive burdens
+- open, parked, and closed loop states
+- closure condition and next-action fields
+- due review endpoint for open loops
 
 Current constraints:
 
@@ -163,6 +168,7 @@ POST /api/action-drafts/{id}/reject
 ```
 
 Burdens:
+
 ```http
 POST /api/cognitive-burdens
 POST /api/cognitive-burdens/from-input/{inputItemId}
@@ -170,6 +176,19 @@ GET /api/cognitive-burdens
 GET /api/cognitive-burdens?status=open
 POST /api/cognitive-burdens/{id}/close
 POST /api/cognitive-burdens/{id}/park
+```
+
+Open Loops:
+```http
+POST /api/open-loops
+POST /api/open-loops/from-input/{inputItemId}
+POST /api/open-loops/from-burden/{cognitiveBurdenId}
+GET /api/open-loops
+GET /api/open-loops?status=open
+GET /api/open-loops/due
+GET /api/open-loops/due?date=2026-07-12
+POST /api/open-loops/{id}/close
+POST /api/open-loops/{id}/park
 ```
 
 Notes:
@@ -277,12 +296,12 @@ Completed:
 12. Draft Confirmation Workflow 
 12.6 Core Philosophy Realignment
 13. Cognitive Burden Ledger
-
-Current:
 13.5 Lombok Codebase Simplification
 
-Recommended upcoming roadmap:
+Current:
 14. Open Loop Capture and Closure
+
+Recommended upcoming roadmap:
 15. Commitment Ledger
 16. Attention Governor
 17. Daily Load Planner
