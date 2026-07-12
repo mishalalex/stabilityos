@@ -6,10 +6,12 @@ import com.stabilityos.backend.input.dto.CreateInputItemRequest;
 import com.stabilityos.backend.input.dto.InputItemResponse;
 import com.stabilityos.backend.telegram.dto.TelegramMessage;
 import com.stabilityos.backend.telegram.dto.TelegramUpdateRequest;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service
 public class TelegramInboundService {
 
@@ -17,14 +19,6 @@ public class TelegramInboundService {
 
     private final InputItemService inputItemService;
     private final NotificationDeliveryService notificationDeliveryService;
-
-    public TelegramInboundService(
-            InputItemService inputItemService,
-            NotificationDeliveryService notificationDeliveryService
-    ) {
-        this.inputItemService = inputItemService;
-        this.notificationDeliveryService = notificationDeliveryService;
-    }
 
     public void handleUpdate(TelegramUpdateRequest update) {
         if (update == null || update.message() == null) {

@@ -4,19 +4,17 @@ import com.stabilityos.backend.burden.dto.BurdenDecisionRequest;
 import com.stabilityos.backend.burden.dto.CognitiveBurdenResponse;
 import com.stabilityos.backend.burden.dto.CreateCognitiveBurdenRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/cognitive-burdens")
 public class CognitiveBurdenController {
 
     private final CognitiveBurdenService cognitiveBurdenService;
-
-    public CognitiveBurdenController(CognitiveBurdenService cognitiveBurdenService) {
-        this.cognitiveBurdenService = cognitiveBurdenService;
-    }
 
     @PostMapping
     public CognitiveBurdenResponse createBurden(

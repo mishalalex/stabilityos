@@ -4,6 +4,7 @@ import com.stabilityos.backend.delivery.NotificationDeliveryService;
 import com.stabilityos.backend.news.NewsDigestFormatter;
 import com.stabilityos.backend.news.NewsService;
 import com.stabilityos.backend.news.dto.DailyNewsDigestResponse;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
+@RequiredArgsConstructor
 @Service
 @ConditionalOnProperty(prefix = "stabilityos.scheduler", name = "news-digest-enabled", havingValue = "true")
 public class ScheduledNewsDigestService {
@@ -21,16 +23,6 @@ public class ScheduledNewsDigestService {
     private final NewsService newsService;
     private final NewsDigestFormatter newsDigestFormatter;
     private final NotificationDeliveryService notificationDeliveryService;
-
-    public ScheduledNewsDigestService(
-            NewsService newsService,
-            NewsDigestFormatter newsDigestFormatter,
-            NotificationDeliveryService notificationDeliveryService
-    ) {
-        this.newsService = newsService;
-        this.newsDigestFormatter = newsDigestFormatter;
-        this.notificationDeliveryService = notificationDeliveryService;
-    }
 
     @Scheduled(
             cron = "${stabilityos.scheduler.news-digest-cron}",

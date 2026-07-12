@@ -2,11 +2,13 @@ package com.stabilityos.backend.news;
 
 import com.stabilityos.backend.news.dto.DailyNewsDigestResponse;
 import com.stabilityos.backend.news.dto.NewsItemResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class NewsDigestFormatter {
 

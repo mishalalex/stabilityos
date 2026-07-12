@@ -3,6 +3,7 @@ package com.stabilityos.backend.health;
 import com.stabilityos.backend.health.dto.CreateHealthLogRequest;
 import com.stabilityos.backend.health.dto.HealthLogResponse;
 import com.stabilityos.backend.health.dto.HealthSummaryResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,14 +12,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+@RequiredArgsConstructor
 @Service
 public class HealthLogService {
 
     private final HealthLogRepository healthLogRepository;
-
-    public HealthLogService(HealthLogRepository healthLogRepository) {
-        this.healthLogRepository = healthLogRepository;
-    }
 
     public HealthLogResponse createHealthLog(CreateHealthLogRequest request) {
         HealthLog healthLog = new HealthLog(

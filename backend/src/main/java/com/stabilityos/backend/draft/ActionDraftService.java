@@ -3,10 +3,12 @@ package com.stabilityos.backend.draft;
 import com.stabilityos.backend.draft.dto.ActionDraftResponse;
 import com.stabilityos.backend.input.InputItem;
 import com.stabilityos.backend.input.InputItemRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class ActionDraftService {
 
@@ -14,14 +16,6 @@ public class ActionDraftService {
 
     private final ActionDraftRepository actionDraftRepository;
     private final InputItemRepository inputItemRepository;
-
-    public ActionDraftService(
-            ActionDraftRepository actionDraftRepository,
-            InputItemRepository inputItemRepository
-    ) {
-        this.actionDraftRepository = actionDraftRepository;
-        this.inputItemRepository = inputItemRepository;
-    }
 
     public ActionDraftResponse createDraftFromInput(Long inputItemId) {
         InputItem inputItem = inputItemRepository.findById(inputItemId)

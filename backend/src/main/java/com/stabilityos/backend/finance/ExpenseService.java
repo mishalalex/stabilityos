@@ -3,6 +3,7 @@ package com.stabilityos.backend.finance;
 import com.stabilityos.backend.finance.dto.CreateExpenseRequest;
 import com.stabilityos.backend.finance.dto.ExpenseResponse;
 import com.stabilityos.backend.finance.dto.MonthlySummaryResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,14 +12,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @Service
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
-
-    public ExpenseService(ExpenseRepository expenseRepository) {
-        this.expenseRepository = expenseRepository;
-    }
 
     public ExpenseResponse createExpense(CreateExpenseRequest request) {
         Expense expense = new Expense(

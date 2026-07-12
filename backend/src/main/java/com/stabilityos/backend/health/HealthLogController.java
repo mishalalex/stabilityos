@@ -4,19 +4,17 @@ import com.stabilityos.backend.health.dto.CreateHealthLogRequest;
 import com.stabilityos.backend.health.dto.HealthLogResponse;
 import com.stabilityos.backend.health.dto.HealthSummaryResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/health")
 public class HealthLogController {
 
     private final HealthLogService healthLogService;
-
-    public HealthLogController(HealthLogService healthLogService) {
-        this.healthLogService = healthLogService;
-    }
 
     @PostMapping("/logs")
     public HealthLogResponse createHealthLog(@Valid @RequestBody CreateHealthLogRequest request) {

@@ -2,19 +2,17 @@ package com.stabilityos.backend.draft;
 
 import com.stabilityos.backend.draft.dto.ActionDraftResponse;
 import com.stabilityos.backend.draft.dto.DraftDecisionRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/action-drafts")
 public class ActionDraftController {
 
     private final ActionDraftService actionDraftService;
-
-    public ActionDraftController(ActionDraftService actionDraftService) {
-        this.actionDraftService = actionDraftService;
-    }
 
     @PostMapping("/from-input/{inputItemId}")
     public ActionDraftResponse createDraftFromInput(@PathVariable Long inputItemId) {

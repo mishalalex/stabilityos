@@ -2,20 +2,18 @@ package com.stabilityos.backend.input;
 
 import com.stabilityos.backend.input.dto.CreateInputItemRequest;
 import com.stabilityos.backend.input.dto.InputItemResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class InputItemService {
 
     private static final String STATUS_RECEIVED = "received";
 
     private final InputItemRepository inputItemRepository;
-
-    public InputItemService(InputItemRepository inputItemRepository) {
-        this.inputItemRepository = inputItemRepository;
-    }
 
     public InputItemResponse createInputItem(CreateInputItemRequest request) {
         InputItem inputItem = new InputItem(
