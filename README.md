@@ -12,18 +12,26 @@ StabilityOS is currently a backend-only system. It has no frontend and no provid
 
 Implemented areas:
 
-- Finance and health logging
-- Daily, evening, and weekly planning summaries
-- Deterministic assistant and persona responses
-- Seeded assistant memory
-- Manual news capture and digest delivery
-- Input inbox and Telegram text ingestion
-- Draft review workflow
-- Cognitive burden ledger
-- Open loop capture and closure
-- Commitment ledger
-- Attention checks for allowing, deferring, or blocking proposed activities
-- Scheduled Telegram delivery with logging fallback
+## Current Scope
+
+Implemented backend modules:
+
+- `finance`: basic financial signal capture
+- `health`: basic physical state tracking
+- `planning`: daily, evening, and weekly correction loops
+- `assistant`: deterministic assistant responses with persona support
+- `memory`: seeded assistant memory and personal context foundation
+- `persona`: deterministic persona composition for assistant output
+- `scheduler`: scheduled prompts and brief delivery
+- `delivery`: Telegram delivery adapter with log fallback
+- `news`: manual news capture and digest generation; intentionally constrained
+- `input`: raw input inbox for text/media metadata ingestion
+- `telegram`: inbound Telegram text receiver
+- `draft`: action draft and confirmation workflow
+- `burden`: cognitive burden ledger for open loops, decisions, reminders, worries, and unresolved mental load
+- `openloop`: open loop capture and closure workflow for unresolved decisions, reminders, tasks, and worries
+- `commitment`: commitment ledger for explicit promises, obligations, and follow-through items
+- `attention`: deterministic attention checks for allowing, deferring, or blocking proposed activities
 
 Runtime shape:
 
@@ -37,7 +45,103 @@ Controllers -> Services -> Repositories
 PostgreSQL + Flyway migrations
 ```
 
-## Modules
+## Current Phase
+
+**Phase 16: Attention Governor**
+
+This phase adds a deterministic attention gate that decides whether a proposed activity should be allowed now, deferred, or blocked. It helps StabilityOS protect attention instead of merely capturing more information.
+
+Current focus:
+
+- make the core philosophy explicit: reduce the executive-function burden required to run Mishal’s life
+- verify the actual backend state before planning new phases
+- ensure upcoming phases reduce life-management load instead of adding more capture surfaces
+- keep StabilityOS biased toward closure, decision support, reminders, recovery, and execution
+
+Current capabilities:
+
+- expense capture and monthly summaries
+- health logging and health summary
+- planning summaries for daily brief, evening reflection, and weekly review
+- deterministic assistant responses with persona layer
+- seeded memory foundation
+- scheduled daily brief
+- Telegram outbound delivery
+- manual news capture and scheduled news digest delivery
+- input inbox storage
+- Telegram inbound text receiver
+- action-draft creation from inputs
+- pending, confirmed, and rejected draft workflow
+- manual cognitive burden creation
+- cognitive burden creation from captured input items
+- open, parked, and closed burden states
+- burden score from 1 to 5
+- next-action field for reducing vague mental load
+- Lombok-backed constructor injection for Spring services/controllers/config classes
+- Lombok-backed getters and protected no-arg constructors for JPA entities
+- DTO records retained as records
+- explicit constructors retained where Spring `@Value` injection or domain-controlled construction is clearer
+- manual open loop creation
+- open loop creation from captured input items
+- open loop creation from cognitive burdens
+- open, parked, and closed loop states
+- closure condition and next-action fields
+- due review endpoint for open loops
+- unit tests for input classification
+- unit tests for open loop creation and conversion behavior
+- unit tests for API-key filter behavior
+- unit tests for news digest formatting
+- test structure follows Maven/Spring Boot conventions under `src/test/java`
+- manual commitment creation
+- commitment creation from open loops
+- open, completed, and dropped commitment states
+- priority and due-date fields
+- due commitment endpoint
+- unit tests for commitment service behavior
+- controller delegation tests for commitment endpoints
+- attention check creation
+- allowed_now, deferred, and blocked attention decisions
+- decision reason and recommended action fields
+- commitment-linked attention checks
+- list attention checks by decision
+- unit tests for attention decision behavior
+- controller delegation tests for attention endpoints
+
+## Testing Strategy
+
+Tests live under `backend/src/test/java`.
+
+Package structure mirrors production code:
+
+- production: `src/main/java/com/stabilityos/backend/openloop/OpenLoopService.java`
+- test: `src/test/java/com/stabilityos/backend/openloop/OpenLoopServiceTest.java`
+
+Current testing policy:
+
+- unit tests cover deterministic service rules and domain transitions
+- security tests cover API-key filter behavior
+- integration tests will be added selectively for database-backed API flows
+- E2E tests will be added later when Telegram-to-action workflows stabilize
+- every future feature phase should include relevant tests in the same PR
+
+Current constraints:
+
+- no provider-backed AI generation yet
+- no advanced memory retrieval yet
+- no public Telegram webhook exposure yet unless configured separately
+- no media ingestion yet
+- no local OCR yet
+- no voice transcription yet
+- no food logging core yet
+- no cognitive debt manager yet
+- no automatic execution of confirmed drafts into downstream modules yet
+- news ingestion is manual and should remain constrained until attention governance exists
+- no browser/app-level blocking yet
+- no automatic attention enforcement yet
+
+## API Surface
+
+Core:
 
 Production code lives under `backend/src/main/java/com/stabilityos/backend`.
 
@@ -103,7 +207,14 @@ Create local backup artifacts:
 
 ## Maven Wrapper
 
-The repo currently has a backend-local Maven wrapper:
+Attention:
+```http
+POST /api/attention/checks
+GET /api/attention/checks
+GET /api/attention/checks?decision=blocked
+```
+
+Notes:
 
 ```bash
 cd backend
@@ -267,34 +378,56 @@ stabilityos/
 
 Completed:
 
-- Foundation, config hardening, API security
-- Finance, health, planning, assistant, memory, persona
-- Scheduled daily brief and Telegram delivery
-- Manual news digest and Telegram news delivery
-- Input inbox and Telegram inbound text
-- Draft confirmation workflow
-- Cognitive burden ledger
-- Open loop capture and closure
-- Testing foundation
-- Commitment ledger
+1. Foundation
+1.5 Config hardening
+2. Finance Core
+2.5 API key protection
+3. Health Core
+4. Planning and Review Engine
+5. Assistant Brain Foundation
+6. Memory and Personality Foundation
+7. Scheduled Daily Brief
+7.5 Telegram Delivery
+8. News Digest Foundation
+8.5 News Digest Telegram Delivery
+9. Spring Security Hardening
+10. Input Inbox Foundation
+10.5 Telegram Inbound Text Receiver
+11. Assistant Persona Layer
+12. Draft Confirmation Workflow 
+12.6 Core Philosophy Realignment
+13. Cognitive Burden Ledger
+13.5 Lombok Codebase Simplification
+14. Open Loop Capture and Closure
+14.5 Testing Foundation
+15. Commitment Ledger
 
 Current:
+16. Attention Governor
 
-- Attention Governor
+Recommended upcoming roadmap:
+17. Daily Load Planner
+18. Focus Session Tracker
+19. Insight-to-Action Converter
+20. Food Logging Core
+21. Local Screenshot OCR
+22. Local Voice Transcription
+23. AI Provider Interface
+24. Paid AI Food Photo Extraction
+25. Token, Cost, and Failure Fallback
+26. Memory Retrieval Upgrade
+27. Weekly Operating Review v2
+28. Automated News Ingestion, delayed and constrained
+29. News Relevance and Deduplication
+30. AI-Assisted News Summaries
+31. Obsidian / Markdown Export
+32. Paperclip Evaluation
+33. Hermes Evaluation
+34. Dashboard Foundation
+35. Agent Experiments
+36. Appearance and Confidence Intelligence
 
-Likely next:
-
-- Daily load planner
-- Focus session tracker
-- Insight-to-action converter
-- Food logging core
-- Local OCR and voice transcription
-- AI provider interface
-- Memory retrieval upgrade
-- Weekly operating review v2
-- Dashboard foundation
-
-Automated news, broad agent workflows, and appearance/confidence features stay delayed unless they clearly reduce life-management burden.
+Automated news, Paperclip, Hermes, agents, dashboard polish, and appearance intelligence are intentionally delayed because they may satisfy curiosity without improving execution unless executive-function rails are built first.
 
 ## Design Principles
 
