@@ -1,0 +1,32 @@
+package com.stabilityos.backend.attention.dto;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record CreateAttentionCheckRequest(
+        Long commitmentId,
+
+        @NotBlank
+        String source,
+
+        @NotBlank
+        String activityType,
+
+        @NotBlank
+        String title,
+
+        String description,
+
+        @NotNull
+        @Min(1)
+        @Max(5)
+        Integer urgencyScore,
+
+        @NotNull
+        @Min(1)
+        @Max(5)
+        Integer importanceScore
+) {
+}
