@@ -31,6 +31,7 @@ Implemented backend modules:
 - `burden`: cognitive burden ledger for open loops, decisions, reminders, worries, and unresolved mental load
 - `openloop`: open loop capture and closure workflow for unresolved decisions, reminders, tasks, and worries
 - `commitment`: commitment ledger for explicit promises, obligations, and follow-through items
+- `attention`: deterministic attention checks for allowing, deferring, or blocking proposed activities
 
 Runtime shape:
 
@@ -46,9 +47,9 @@ Spring Boot API
 
 ## Current Phase
 
-**Phase 15: Commitment Ledger**
+**Phase 16: Attention Governor**
 
-This phase adds a commitment ledger for explicit promises, obligations, and follow-through items. It turns selected open loops into trackable commitments with priority, due dates, completion, and drop decisions.
+This phase adds a deterministic attention gate that decides whether a proposed activity should be allowed now, deferred, or blocked. It helps StabilityOS protect attention instead of merely capturing more information.
 
 Current focus:
 
@@ -98,6 +99,13 @@ Current capabilities:
 - due commitment endpoint
 - unit tests for commitment service behavior
 - controller delegation tests for commitment endpoints
+- attention check creation
+- allowed_now, deferred, and blocked attention decisions
+- decision reason and recommended action fields
+- commitment-linked attention checks
+- list attention checks by decision
+- unit tests for attention decision behavior
+- controller delegation tests for attention endpoints
 
 ## Testing Strategy
 
@@ -126,10 +134,10 @@ Current constraints:
 - no voice transcription yet
 - no food logging core yet
 - no cognitive debt manager yet
-- no attention governor yet
-- no commitment ledger yet
 - no automatic execution of confirmed drafts into downstream modules yet
 - news ingestion is manual and should remain constrained until attention governance exists
+- no browser/app-level blocking yet
+- no automatic attention enforcement yet
 
 ## API Surface
 
@@ -219,6 +227,13 @@ GET /api/open-loops/due
 GET /api/open-loops/due?date=2026-07-12
 POST /api/open-loops/{id}/close
 POST /api/open-loops/{id}/park
+```
+
+Attention:
+```http
+POST /api/attention/checks
+GET /api/attention/checks
+GET /api/attention/checks?decision=blocked
 ```
 
 Notes:
@@ -329,12 +344,12 @@ Completed:
 13.5 Lombok Codebase Simplification
 14. Open Loop Capture and Closure
 14.5 Testing Foundation
-
-Current:
 15. Commitment Ledger
 
-Recommended upcoming roadmap:
+Current:
 16. Attention Governor
+
+Recommended upcoming roadmap:
 17. Daily Load Planner
 18. Focus Session Tracker
 19. Insight-to-Action Converter

@@ -2,11 +2,12 @@ Big Picture
 
 This repo is a Spring Boot backend for a self-hosted executive-function system.
 
-Right now it is mostly a structured capture and review engine:
+Right now it is a structured capture, review, and follow-through engine:
 
 - receive API or Telegram input
 - store structured records in PostgreSQL
 - compute planning summaries from finance and health data
+- turn captured mental load into drafts, burdens, open loops, and commitments
 - produce deterministic assistant-style responses
 - optionally send scheduled output through Telegram
 
@@ -36,11 +37,6 @@ What Starts App
 
 Main entrypoint is `backend/src/main/java/com/stabilityos/backend/BackendApplication.java`.
 
-Important annotations:
-
-- `@SpringBootApplication`: enables component scanning and Spring Boot auto-configuration
-- `@EnableScheduling`: enables scheduled jobs
-
 Startup flow is roughly:
 
 1. Spring Boot loads configuration from `application.yml` and env vars.
@@ -52,26 +48,14 @@ Startup flow is roughly:
 7. Scheduled beans become active if their properties enable them.
 8. HTTP server starts on port `8080`.
 
-How Normal Request Flows
-
-Example: create expense.
-
-1. `ExpenseController` receives `POST /api/expenses`.
-2. Controller passes validated request DTO to `ExpenseService`.
-3. Service creates `Expense` entity.
-4. `ExpenseRepository` saves entity.
-5. Spring Data JPA writes row into `expenses`.
-6. Service maps saved entity to response DTO.
-7. Controller returns JSON.
-
-That same controller -> service -> repository pattern is used almost everywhere.
-
 Main Runtime Packages
 
 Under `backend/src/main/java/com/stabilityos/backend`:
 
 - `assistant`: deterministic assistant responses for planning prompts
+- `burden`: cognitive burden ledger for unresolved mental load
 - `common`: shared lightweight endpoints like health check
+- `commitment`: commitment ledger for explicit promises and obligations
 - `config`: startup data seeding
 - `delivery`: outbound notification abstraction and implementations
 - `draft`: review/confirm/reject workflow for captured input
@@ -80,6 +64,7 @@ Under `backend/src/main/java/com/stabilityos/backend`:
 - `input`: raw inbox for captured text and metadata
 - `memory`: persisted assistant memory entries
 - `news`: manual news capture and digest generation
+- `openloop`: open loop capture and closure workflow
 - `persona`: persona composition for assistant output
 - `planning`: daily brief, evening reflection, weekly review
 - `scheduler`: timed daily brief and news digest jobs
@@ -103,12 +88,8 @@ What Each Module Actually Does
 `planning`
 
 - Pulls finance and health data directly from repositories.
-- Builds:
-  - daily brief
-  - evening reflection
-  - weekly review
+- Builds daily brief, evening reflection, and weekly review.
 - Logic is deterministic and threshold-based, not model-driven.
-- Product thesis mostly lives here today.
 
 `assistant`
 
@@ -142,13 +123,7 @@ What Each Module Actually Does
 - Stores raw captured items in `input_items`.
 - Supports API-created input and Telegram-created text input.
 - Saves source, input type, raw text, file path metadata, Telegram message id, status, detected domain, error message, timestamps.
-- Domain detection is simple keyword heuristics:
-  - `finance`
-  - `health`
-  - `food`
-  - `news`
-  - `planning`
-  - `unknown`
+- Domain detection is simple keyword heuristics: `finance`, `health`, `food`, `news`, `planning`, `unknown`.
 
 `draft`
 
@@ -156,8 +131,29 @@ What Each Module Actually Does
 - Draft title and type are derived from detected domain.
 - Drafts can be listed, confirmed, or rejected.
 - Confirming or rejecting only updates draft state and decision metadata.
-- No downstream write into finance, health, news, or planning modules happens yet.
-- Draft creation also does not currently mark the source input item as processed.
+- No downstream write into finance, health, news, planning, burden, open loop, or commitment modules happens yet.
+
+`burden`
+
+- Stores cognitive burdens for decisions, reminders, worries, and unresolved mental load.
+- Can create burdens manually or from input items.
+- Supports listing all burdens or filtering by status.
+- Supports closing and parking burdens with an optional note.
+
+`openloop`
+
+- Stores unresolved loops with title, description, type, closure condition, next action, and next review date.
+- Can create open loops manually, from input items, or from cognitive burdens.
+- Supports open, closed, and parked states.
+- Provides a due-review endpoint based on `next_review_date`.
+
+`commitment`
+
+- Stores explicit promises, obligations, and follow-through items.
+- Can create commitments manually or from open loops.
+- Tracks status, priority, due date, completion/drop timestamps, and outcome note.
+- Provides a due-commitments endpoint based on `due_date`.
+- Completing or dropping a commitment updates state but does not currently mutate the source open loop.
 
 `telegram`
 
@@ -171,14 +167,14 @@ What Each Module Actually Does
 
 - Defines notification abstraction via `NotificationDeliveryService`.
 - `TelegramNotificationDeliveryService` sends via Telegram Bot API when enabled.
-- `LoggingNotificationDeliveryService` is fallback when Telegram delivery disabled or missing.
+- `LoggingNotificationDeliveryService` is fallback when Telegram delivery is disabled or missing.
 
 `scheduler`
 
-- `ScheduledBriefService`: active only when `stabilityos.scheduler.enabled=true`
-- `ScheduledNewsDigestService`: active only when `stabilityos.scheduler.news-digest-enabled=true`
+- `ScheduledBriefService`: active only when `stabilityos.scheduler.enabled=true`.
+- `ScheduledNewsDigestService`: active only when `stabilityos.scheduler.news-digest-enabled=true`.
 - Both use cron plus configured timezone.
-- Daily brief scheduler asks assistant: `"What should I do today?"`
+- Daily brief scheduler asks assistant: `"What should I do today?"`.
 - News digest scheduler formats digest for `LocalDate.now()` and skips delivery when item count is zero.
 
 `security`
@@ -217,6 +213,24 @@ Protected by API key:
 - `GET /api/action-drafts`
 - `POST /api/action-drafts/{id}/confirm`
 - `POST /api/action-drafts/{id}/reject`
+- `POST /api/cognitive-burdens`
+- `POST /api/cognitive-burdens/from-input/{inputItemId}`
+- `GET /api/cognitive-burdens`
+- `POST /api/cognitive-burdens/{id}/close`
+- `POST /api/cognitive-burdens/{id}/park`
+- `POST /api/open-loops`
+- `POST /api/open-loops/from-input/{inputItemId}`
+- `POST /api/open-loops/from-burden/{cognitiveBurdenId}`
+- `GET /api/open-loops`
+- `GET /api/open-loops/due`
+- `POST /api/open-loops/{id}/close`
+- `POST /api/open-loops/{id}/park`
+- `POST /api/commitments`
+- `POST /api/commitments/from-open-loop/{openLoopId}`
+- `GET /api/commitments`
+- `GET /api/commitments/due`
+- `POST /api/commitments/{id}/complete`
+- `POST /api/commitments/{id}/drop`
 
 Security Flow
 
@@ -273,8 +287,15 @@ Flyway migrations create these tables:
 - `news_items`
 - `input_items`
 - `action_drafts`
+- `cognitive_burdens`
+- `open_loops`
+- `commitments`
+- `attention_checks`
 
-Important detail: `app_metadata` exists from `V1__init.sql`, even though current business logic barely uses it.
+Important details:
+
+- `app_metadata` exists from `V1__init.sql`, even though current business logic barely uses it.
+- `attention_checks` currently exists as a migration, but no Java runtime package or endpoints use it yet.
 
 Why Flyway Matters Here
 
@@ -293,16 +314,6 @@ Current pattern is:
 - application code assumes schema exists
 
 `ddl-auto: validate` means Hibernate checks mapping compatibility but does not create or alter tables.
-
-What Planning Logic Really Is
-
-Planning is not generic orchestration yet. It is explicit business logic over finance and health data:
-
-- daily brief checks recent expense and health logging, sleep average, water average
-- evening reflection counts whether expense and health data were logged today
-- weekly review totals spending, finds top category, computes average sleep and water, and emits next-week priorities
-
-This matters because current "assistant intelligence" is mostly deterministic planning logic plus formatting, not AI reasoning.
 
 What Telegram Flow Really Does
 
@@ -333,7 +344,7 @@ What Repo Is Not Yet
 - no media ingestion processing
 - no workflow engine
 - no user accounts or multi-user auth
-- almost no automated test coverage beyond context-load smoke test
+- no runtime attention governor service yet
 
 Build And Runtime Shape
 
@@ -348,32 +359,51 @@ Tech stack in actual code:
 - Spring Actuator
 - Flyway
 - PostgreSQL
-- Maven Wrapper
+- Testcontainers for integration tests
+- Maven
 - Docker Compose
 
 Root `pom.xml` is only aggregator. Real application dependencies are in `backend/pom.xml`.
 
 Testing State
 
-There is currently only one test class:
+Unit tests run during the normal Maven test phase through Surefire:
 
-- `backend/src/test/java/com/stabilityos/backend/BackendApplicationTests.java`
+- `ApiKeyAuthenticationFilterTest`
+- `InputItemServiceTest`
+- `OpenLoopServiceTest`
+- `NewsDigestFormatterTest`
+- `CommitmentServiceTest`
+- `CommitmentControllerTest`
 
-It only verifies Spring context loads. There are no focused unit tests or integration tests for finance, health, planning, input, draft, Telegram, or security flows yet.
+Integration tests are named `*IT.java` and run through Failsafe only when the `integration` profile is enabled:
+
+- `BackendApplicationIT`
+
+`BackendApplicationIT` starts a temporary PostgreSQL 16 container with Testcontainers, wires Spring to that database, runs Flyway, and verifies the application context starts.
 
 Local Run Commands
 
-Useful commands from repo docs:
+Useful commands:
 
 - `docker compose up -d --build`
 - `docker compose ps`
 - `curl http://127.0.0.1:8080/api/health`
-- `./backend/mvnw spring-boot:run`
-- `./backend/mvnw test`
+- `mvn test`
+- `mvn clean install`
+- `mvn verify -Pintegration`
+- `cat backend/target/surefire-reports/*.txt`
+- `cat backend/target/failsafe-reports/*.txt`
 - `./ops/backup.sh`
+
+Maven wrapper note:
+
+- Installed `mvn` works from the repo root and uses the root aggregator `pom.xml`.
+- `backend/mvnw` exists for backend-local Maven runs.
+- There is no root-level `./mvnw` yet; best long-term shape is a root-level Maven wrapper for the multi-module repo.
 
 One Mental Model
 
 If you need one sentence:
 
-This repo is a Spring Boot backend that captures structured personal signals, computes simple review loops, stores them in PostgreSQL, and optionally delivers scheduled summaries through Telegram.
+This repo is a Spring Boot backend that captures structured personal signals, turns mental load into reviewable records and commitments, stores them in PostgreSQL, and optionally delivers scheduled summaries through Telegram.
