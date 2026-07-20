@@ -30,6 +30,7 @@ Implemented backend modules:
 - `draft`: action draft and confirmation workflow
 - `burden`: cognitive burden ledger for open loops, decisions, reminders, worries, and unresolved mental load
 - `openloop`: open loop capture and closure workflow for unresolved decisions, reminders, tasks, and worries
+- `commitment`: commitment ledger for explicit promises, obligations, and follow-through items
 
 Runtime shape:
 
@@ -45,9 +46,9 @@ Spring Boot API
 
 ## Current Phase
 
-**Phase 14: Open Loop Capture and Closure**
+**Phase 15: Commitment Ledger**
 
-This phase adds a dedicated workflow for turning unresolved mental load into explicit open loops with closure conditions, next actions, review dates, and close/park decisions.
+This phase adds a commitment ledger for explicit promises, obligations, and follow-through items. It turns selected open loops into trackable commitments with priority, due dates, completion, and drop decisions.
 
 Current focus:
 
@@ -85,6 +86,35 @@ Current capabilities:
 - open, parked, and closed loop states
 - closure condition and next-action fields
 - due review endpoint for open loops
+- unit tests for input classification
+- unit tests for open loop creation and conversion behavior
+- unit tests for API-key filter behavior
+- unit tests for news digest formatting
+- test structure follows Maven/Spring Boot conventions under `src/test/java`
+- manual commitment creation
+- commitment creation from open loops
+- open, completed, and dropped commitment states
+- priority and due-date fields
+- due commitment endpoint
+- unit tests for commitment service behavior
+- controller delegation tests for commitment endpoints
+
+## Testing Strategy
+
+Tests live under `backend/src/test/java`.
+
+Package structure mirrors production code:
+
+- production: `src/main/java/com/stabilityos/backend/openloop/OpenLoopService.java`
+- test: `src/test/java/com/stabilityos/backend/openloop/OpenLoopServiceTest.java`
+
+Current testing policy:
+
+- unit tests cover deterministic service rules and domain transitions
+- security tests cover API-key filter behavior
+- integration tests will be added selectively for database-backed API flows
+- E2E tests will be added later when Telegram-to-action workflows stabilize
+- every future feature phase should include relevant tests in the same PR
 
 Current constraints:
 
@@ -297,12 +327,13 @@ Completed:
 12.6 Core Philosophy Realignment
 13. Cognitive Burden Ledger
 13.5 Lombok Codebase Simplification
+14. Open Loop Capture and Closure
+14.5 Testing Foundation
 
 Current:
-14. Open Loop Capture and Closure
+15. Commitment Ledger
 
 Recommended upcoming roadmap:
-15. Commitment Ledger
 16. Attention Governor
 17. Daily Load Planner
 18. Focus Session Tracker
