@@ -1,16 +1,16 @@
 # StabilityOS
 
-StabilityOS is a self-hosted executive-function operating system built with Spring Boot and PostgreSQL.
+StabilityOS is a self-hosted executive-function backend built with Spring Boot and PostgreSQL.
 
-## Core Philosophy
+Its purpose is simple: reduce the mental effort required to capture, decide, remember, prioritize, follow through, and recover from daily life demands.
 
-Reduce the executive-function burden required to run user’s life.
+It should help Mishal run life with fewer open loops, fewer repeated decisions, fewer forgotten commitments, fewer context switches, and less dependence on willpower. It should not become another information collector or productivity distraction.
 
-StabilityOS should not become another information collector, productivity toy, or high-quality distraction engine. 
+## Current Shape
 
-Its purpose is to reduce the mental effort required to capture, decide, remember, prioritize, follow through, and recover from daily life demands.
+StabilityOS is currently a backend-only system. It has no frontend and no provider-backed LLM integration yet.
 
-The system exists to help user run his life with fewer open loops, fewer repeated decisions, fewer forgotten commitments, fewer context switches, and less dependence on willpower.
+Implemented areas:
 
 ## Current Scope
 
@@ -36,13 +36,13 @@ Implemented backend modules:
 Runtime shape:
 
 ```text
+HTTP / Telegram input
+        |
 Spring Boot API
-  ├─ domain modules
-  ├─ assistant orchestration
-  ├─ schedulers
-  └─ delivery adapters
-       ↓
-    PostgreSQL
+        |
+Controllers -> Services -> Repositories
+        |
+PostgreSQL + Flyway migrations
 ```
 
 ## Current Phase
@@ -143,91 +143,69 @@ Current constraints:
 
 Core:
 
-```http
-GET /api/health
-POST /api/assistant/respond
-GET /api/assistant/persona
+Production code lives under `backend/src/main/java/com/stabilityos/backend`.
+
+- `finance`: expenses and monthly summaries
+- `health`: sleep, water, weight, mood, and health summaries
+- `planning`: daily brief, evening reflection, weekly review
+- `assistant`, `persona`, `memory`: deterministic assistant behavior and stored context
+- `input`, `telegram`: raw input capture and Telegram inbound text
+- `draft`: review/confirm/reject workflow for captured input
+- `burden`: unresolved mental load, worries, reminders, and decisions
+- `openloop`: unresolved loops with closure conditions and review dates
+- `commitment`: promises, obligations, due dates, completion, and drops
+- `attention`: activity checks with `allowed_now`, `deferred`, or `blocked` decisions
+- `news`: manual news items and daily digest
+- `scheduler`, `delivery`: scheduled output and Telegram/log delivery
+- `security`: stateless API-key protection
+
+## Quick Start
+
+Prerequisites:
+
+- Java 21
+- Maven
+- Docker Desktop, for Docker Compose and integration tests
+
+Run the app with Docker Compose:
+
+```bash
+docker compose up -d --build
+curl http://127.0.0.1:8080/api/health
 ```
 
-Finance:
+Run the backend directly from the repo root:
 
-```http
-POST /api/expenses
-GET /api/expenses
-GET /api/finance/monthly-summary
+```bash
+mvn -pl backend spring-boot:run
 ```
 
-Health:
+Run unit tests:
 
-```http
-POST /api/health/logs
-GET /api/health/logs
-GET /api/health/summary
+```bash
+mvn test
 ```
 
-Planning:
+Run integration tests with Testcontainers PostgreSQL:
 
-```http
-GET /api/planning/daily-brief
-GET /api/planning/evening-reflection
-GET /api/planning/weekly-review
+```bash
+mvn verify -Pintegration
 ```
 
-News:
+Show test summaries after a run:
 
-```http
-POST /api/news/items
-GET /api/news/items
-GET /api/news/daily-digest
+```bash
+cat backend/target/surefire-reports/*.txt
+cat backend/target/failsafe-reports/*.txt
 ```
 
-Input Inbox:
+Create local backup artifacts:
 
-```http
-POST /api/input-items
-GET /api/input-items
-GET /api/input-items?status=received
+```bash
+./ops/backup.sh
 ```
 
-Telegram:
-
-```http
-POST /api/telegram/webhook
-```
-
-Drafts / Action Drafts:
-
-```http
-POST /api/action-drafts/from-input/{inputItemId}
-GET /api/action-drafts
-GET /api/action-drafts?status=pending
-POST /api/action-drafts/{id}/confirm
-POST /api/action-drafts/{id}/reject
-```
-
-Burdens:
-
-```http
-POST /api/cognitive-burdens
-POST /api/cognitive-burdens/from-input/{inputItemId}
-GET /api/cognitive-burdens
-GET /api/cognitive-burdens?status=open
-POST /api/cognitive-burdens/{id}/close
-POST /api/cognitive-burdens/{id}/park
-```
-
-Open Loops:
-```http
-POST /api/open-loops
-POST /api/open-loops/from-input/{inputItemId}
-POST /api/open-loops/from-burden/{cognitiveBurdenId}
-GET /api/open-loops
-GET /api/open-loops?status=open
-GET /api/open-loops/due
-GET /api/open-loops/due?date=2026-07-12
-POST /api/open-loops/{id}/close
-POST /api/open-loops/{id}/park
-```
+## Maven Wrapper
 
 Attention:
 ```http
@@ -238,22 +216,20 @@ GET /api/attention/checks?decision=blocked
 
 Notes:
 
-- `/api/health` is public health check endpoint.
-- `/api/telegram/webhook` bypasses API-key filter but still requires `X-Telegram-Bot-Api-Secret-Token`.
-- other `/api/**` routes are protected by API key filter
-- memory, scheduler, and delivery behavior are configuration-driven rather than exposed as admin endpoints
+```bash
+cd backend
+./mvnw test
+```
 
-## Tech Stack
+There is no root-level `./mvnw` yet. From the repo root, use installed Maven:
 
-- Java 21
-- Spring Boot
-- PostgreSQL
-- Flyway
-- Docker Compose
-- Maven Wrapper
-- Telegram Bot API for optional delivery and inbound text capture
+```bash
+mvn test
+```
 
 ## Configuration
+
+Main config lives in `backend/src/main/resources/application.yml`.
 
 Key environment variables:
 
@@ -269,43 +245,123 @@ Key environment variables:
 - `STABILITYOS_TELEGRAM_BOT_TOKEN`
 - `STABILITYOS_TELEGRAM_CHAT_ID`
 
-Behavior:
+Defaults:
 
-- when Telegram delivery is disabled, scheduled output is logged
-- when news digest has zero items, Telegram delivery is skipped
+- Server port: `8080`
+- Timezone: `Asia/Kolkata`
+- Schedulers disabled by default
+- Telegram delivery disabled by default
 
-## Local Run
+## API Overview
 
-Prerequisites:
+Public:
 
-- Java 21
-- Docker and Docker Compose
-- PostgreSQL, if running outside Docker Compose
-
-Run with Docker Compose:
-
-```bash
-docker compose up -d --build
-curl http://127.0.0.1:8080/api/health
+```http
+GET /api/health
+GET /actuator/health
+POST /api/telegram/webhook
 ```
 
-Run backend directly:
+`/api/telegram/webhook` bypasses the API-key filter but still requires `X-Telegram-Bot-Api-Secret-Token`.
 
-```bash
-./backend/mvnw spring-boot:run
+Protected routes require:
+
+```http
+X-StabilityOS-Key: <api-key>
 ```
 
-Run tests:
+Core protected endpoints:
 
-```bash
-./backend/mvnw test
+```http
+POST /api/assistant/respond
+GET  /api/assistant/persona
+
+POST /api/expenses
+GET  /api/expenses
+GET  /api/finance/monthly-summary
+
+POST /api/health/logs
+GET  /api/health/logs
+GET  /api/health/summary
+
+GET  /api/planning/daily-brief
+GET  /api/planning/evening-reflection
+GET  /api/planning/weekly-review
+
+POST /api/news/items
+GET  /api/news/items
+GET  /api/news/daily-digest
+
+POST /api/input-items
+GET  /api/input-items
+
+POST /api/action-drafts/from-input/{inputItemId}
+GET  /api/action-drafts
+POST /api/action-drafts/{id}/confirm
+POST /api/action-drafts/{id}/reject
+
+POST /api/cognitive-burdens
+POST /api/cognitive-burdens/from-input/{inputItemId}
+GET  /api/cognitive-burdens
+POST /api/cognitive-burdens/{id}/close
+POST /api/cognitive-burdens/{id}/park
+
+POST /api/open-loops
+POST /api/open-loops/from-input/{inputItemId}
+POST /api/open-loops/from-burden/{cognitiveBurdenId}
+GET  /api/open-loops
+GET  /api/open-loops/due
+POST /api/open-loops/{id}/close
+POST /api/open-loops/{id}/park
+
+POST /api/commitments
+POST /api/commitments/from-open-loop/{openLoopId}
+GET  /api/commitments
+GET  /api/commitments/due
+POST /api/commitments/{id}/complete
+POST /api/commitments/{id}/drop
+
+POST /api/attention/checks
+GET  /api/attention/checks
 ```
 
-Create local backup artifacts:
+## Database
+
+Flyway migrations live in `backend/src/main/resources/db/migration`.
+
+Current tables:
+
+- `app_metadata`
+- `expenses`
+- `health_logs`
+- `assistant_memory`
+- `news_items`
+- `input_items`
+- `action_drafts`
+- `cognitive_burdens`
+- `open_loops`
+- `commitments`
+- `attention_checks`
+
+Hibernate uses `ddl-auto: validate`, so Flyway owns schema changes.
+
+## Testing
+
+Unit tests run with Maven Surefire during:
 
 ```bash
-./ops/backup.sh
+mvn test
 ```
+
+Current unit coverage includes input classification, API-key filtering, news digest formatting, open loop behavior, commitment behavior, and attention governor behavior.
+
+Integration tests are named `*IT.java` and run with Maven Failsafe only when requested:
+
+```bash
+mvn verify -Pintegration
+```
+
+`BackendApplicationIT` starts a temporary PostgreSQL 16 container with Testcontainers, runs Flyway, and verifies that the Spring context starts against a real database.
 
 ## Repo Layout
 
@@ -318,7 +374,7 @@ stabilityos/
   backups/     local backup artifacts
 ```
 
-## Phase Roadmap
+## Roadmap
 
 Completed:
 
@@ -375,28 +431,10 @@ Automated news, Paperclip, Hermes, agents, dashboard polish, and appearance inte
 
 ## Design Principles
 
-- The core purpose is to reduce the executive-function burden required to run Mishal’s life.
+- Reduce executive-function burden.
 - Spring Boot remains the system of record.
 - PostgreSQL holds structured state.
-- Capture should lead to triage, closure, delegation, scheduling, or action.
-- The system should reduce cognitive fragmentation, not increase it.
-- The assistant should protect attention, not merely provide more information.
+- Capture must lead to triage, closure, scheduling, delegation, or action.
 - Drafts and confirmation are required before uncertain inputs mutate final records.
-- News and knowledge capture must stay constrained until attention governance exists.
-- Every new phase must answer: “Does this reduce Mishal’s life-management burden?”
-- User understanding of the codebase is part of the product goal.
-- Local development and VPS deployment must stay portable.
-
-## Direction
-
-The target end state is a private executive-function OS that can:
-
-- capture personal inputs with minimal friction
-- identify open loops, commitments, decisions, reminders, and unresolved burdens
-- reduce repeated decision-making
-- convert vague thoughts into clear next actions or parked items
-- protect attention from unnecessary information intake
-- help Mishal recover when routines break
-- synthesize daily and weekly correction loops
-- deliver concise, useful guidance through Telegram
-- avoid becoming a high-quality distraction engine
+- The assistant should protect attention, not create more information intake.
+- Every phase must answer: does this reduce Mishal's life-management burden?
